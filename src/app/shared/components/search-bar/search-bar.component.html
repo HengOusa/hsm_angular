@@ -1,0 +1,25 @@
+<div class="mc-search-bar" [attr.data-test]="testId()" role="search">
+  <mat-icon class="mc-search-bar__icon" aria-hidden="true">search</mat-icon>
+  <input
+    class="mc-search-bar__input"
+    type="search"
+    [placeholder]="placeholder()"
+    [value]="value()"
+    (input)="onInput($event)"
+    [attr.autofocus]="autofocus() ? true : null"
+    [attr.aria-label]="placeholder()"
+    data-test="search-input"
+  />
+  @if (value()) {
+    <button
+      mat-icon-button
+      type="button"
+      class="mc-search-bar__clear"
+      (click)="onClear()"
+      aria-label="Clear search"
+      data-test="search-clear"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  }
+</div>

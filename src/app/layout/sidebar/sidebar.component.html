@@ -1,0 +1,84 @@
+<aside
+  class="mc-sidebar"
+  [class.mc-sidebar--collapsed]="collapsed()"
+  role="navigation"
+  aria-label="Main navigation"
+>
+  <div class="mc-sidebar__brand">
+    <div class="mc-sidebar__logo" aria-hidden="true">
+      <mat-icon>local_hospital</mat-icon>
+    </div>
+    @if (!collapsed()) {
+      <div class="mc-sidebar__brand-text">
+        <span class="mc-sidebar__name">MediCore</span>
+        <span class="mc-sidebar__tagline">Smarter Hospital. Better Care.</span>
+        @if (roleLabel()) {
+          <span class="mc-sidebar__role">{{ roleLabel() }}</span>
+        }
+      </div>
+    }
+  </div>
+
+  <nav class="mc-sidebar__nav">
+    @for (group of navGroups(); track group.id) {
+      @if (!group.children?.length && group.route) {
+        <a
+          class="mc-sidebar__link"
+          [class.mc-sidebar__link--active]="isGroupActive(group)"
+          [routerLink]="group.route"
+          routerLinkActive="mc-sidebar__link--active"
+          [matTooltip]="collapsed() ? group.label : ''"
+          matTooltipPosition="right"
+          [attr.data-test]="'nav-' + group.id"
+        >
+          <mat-icon class="mc-sidebar__icon">{{ group.icon }}</mat-icon>
+          @if (!collapsed()) {
+            <span class="mc-sidebar__label">{{ group.label }}</span>
+          }
+        </a>
+      } @else {
+        <div
+          class="mc-sidebar__group"
+          [class.mc-sidebar__group--open]="isOpen(group.id)"
+          [class.mc-sidebar__group--active]="isGroupActive(group)"
+        >
+          <button
+            type="button"
+            class="mc-sidebar__group-btn"
+            [class.mc-sidebar__group-btn--active]="isGroupActive(group)"
+            (click)="toggleGroup(group.id, $event)"
+            [matTooltip]="collapsed() ? group.label : ''"
+            matTooltipPosition="right"
+            [attr.aria-expanded]="isOpen(group.id)"
+            [attr.data-test]="'nav-group-' + group.id"
+          >
+            <mat-icon class="mc-sidebar__icon">{{ group.icon }}</mat-icon>
+            @if (!collapsed()) {
+              <span class="mc-sidebar__label">{{ group.label }}</span>
+              <mat-icon class="mc-sidebar__chevron">
+                {{ isOpen(group.id) ? 'expand_more' : 'chevron_right' }}
+              </mat-icon>
+            }
+          </button>
+
+          @if (!collapsed() && isOpen(group.id) && group.children) {
+            <div class="mc-sidebar__submenu" role="group" [attr.aria-label]="group.label + ' submenu'">
+              @for (child of group.children; track child.route) {
+                <a
+                  class="mc-sidebar__sublink"
+                  [routerLink]="child.route"
+                  routerLinkActive="mc-sidebar__sublink--active"
+                  [routerLinkActiveOptions]="{ exact: child.route === '/patients' || child.route === '/appointments' }"
+                  [attr.data-test]="navTestId(child.route)"
+                >
+                  <mat-icon class="mc-sidebar__subicon">{{ child.icon }}</mat-icon>
+                  <span class="mc-sidebar__label">{{ child.label }}</span>
+                </a>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+  </nav>
+</aside>

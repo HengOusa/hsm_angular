@@ -1,0 +1,179 @@
+.mc-beds {
+  width: 100%;
+  max-width: 100%;
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
+    gap: var(--mc-space-3);
+    margin-bottom: var(--mc-space-5);
+    width: 100%;
+  }
+
+  &__wards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr));
+    gap: var(--mc-space-3);
+    margin-bottom: var(--mc-space-4);
+    width: 100%;
+  }
+
+  &__filters {
+    margin-bottom: var(--mc-space-3);
+    overflow-x: auto;
+  }
+
+  &__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mc-space-4);
+    margin-bottom: var(--mc-space-4);
+    font-size: var(--mc-font-size-xs);
+    color: var(--mc-text-secondary);
+
+    span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+    gap: var(--mc-space-3);
+    width: 100%;
+  }
+}
+
+.mc-ward-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  padding: var(--mc-space-3);
+  border: 1px solid var(--mc-border);
+  border-radius: var(--mc-radius-lg);
+  background: var(--mc-surface);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: border-color var(--mc-transition-fast), box-shadow var(--mc-transition-fast);
+
+  &:hover {
+    border-color: var(--mc-primary-300);
+  }
+
+  &--active {
+    border-color: var(--mc-primary-800);
+    box-shadow: 0 0 0 2px rgba(21, 101, 192, 0.2);
+  }
+
+  &__name {
+    font-weight: 600;
+    font-size: var(--mc-font-size-sm);
+    color: var(--mc-text-primary);
+  }
+
+  &__meta {
+    font-size: var(--mc-font-size-xs);
+    color: var(--mc-text-secondary);
+  }
+
+  &__bars {
+    display: flex;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+    background: var(--mc-surface-variant);
+  }
+
+  &__bar {
+    min-width: 0;
+
+    &--available { background: var(--mc-status-available); }
+    &--occupied { background: var(--mc-status-occupied); }
+    &--other { background: var(--mc-status-cleaning); }
+  }
+}
+
+.mc-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+
+  &--available { background: var(--mc-status-available); }
+  &--occupied { background: var(--mc-status-occupied); }
+  &--cleaning { background: var(--mc-status-cleaning); }
+  &--reserved { background: var(--mc-status-reserved); }
+  &--maintenance { background: var(--mc-status-maintenance); }
+}
+
+.mc-bed-tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mc-space-2);
+  padding: var(--mc-space-3);
+  background: var(--mc-surface);
+  border: 1px solid var(--mc-border);
+  border-radius: var(--mc-radius-lg);
+  border-left-width: 4px;
+
+  &[data-status='Available'] { border-left-color: var(--mc-status-available); }
+  &[data-status='Occupied'] { border-left-color: var(--mc-status-occupied); }
+  &[data-status='Cleaning'] { border-left-color: var(--mc-status-cleaning); }
+  &[data-status='Reserved'] { border-left-color: var(--mc-status-reserved); }
+  &[data-status='Maintenance'] { border-left-color: var(--mc-status-maintenance); }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--mc-space-2);
+  }
+
+  &__number {
+    font-weight: 700;
+    font-size: var(--mc-font-size-md);
+    color: var(--mc-text-primary);
+  }
+
+  &__room {
+    font-size: var(--mc-font-size-xs);
+    color: var(--mc-text-secondary);
+  }
+
+  &__patient {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: var(--mc-font-size-sm);
+    font-weight: 500;
+    margin-top: 0.25rem;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+
+    &--empty {
+      color: var(--mc-text-disabled);
+      font-weight: 400;
+    }
+  }
+
+  &__features {
+    font-size: var(--mc-font-size-xs);
+    color: var(--mc-text-disabled);
+    font-family: var(--mc-font-mono);
+  }
+
+  &__actions {
+    margin-top: auto;
+    padding-top: var(--mc-space-2);
+  }
+}

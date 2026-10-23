@@ -1,0 +1,124 @@
+// MediCore Utility Classes
+
+// Spacing
+.mc-p-0 { padding: 0; }
+.mc-p-2 { padding: var(--mc-space-2); }
+.mc-p-4 { padding: var(--mc-space-4); }
+.mc-p-6 { padding: var(--mc-space-6); }
+.mc-m-0 { margin: 0; }
+.mc-mb-2 { margin-bottom: var(--mc-space-2); }
+.mc-mb-4 { margin-bottom: var(--mc-space-4); }
+.mc-mb-6 { margin-bottom: var(--mc-space-6); }
+.mc-mt-4 { margin-top: var(--mc-space-4); }
+.mc-gap-2 { gap: var(--mc-space-2); }
+.mc-gap-4 { gap: var(--mc-space-4); }
+
+// Flex
+.mc-flex { display: flex; }
+.mc-flex-col { display: flex; flex-direction: column; }
+.mc-items-center { align-items: center; }
+.mc-justify-between { justify-content: space-between; }
+.mc-justify-center { justify-content: center; }
+.mc-flex-1 { flex: 1; }
+.mc-flex-wrap { flex-wrap: wrap; }
+
+// Grid
+.mc-grid { display: grid; }
+.mc-grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.mc-grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.mc-grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+// Text
+.mc-text-primary { color: var(--mc-text-primary); }
+.mc-text-secondary { color: var(--mc-text-secondary); }
+.mc-text-alert { color: var(--mc-alert-800); }
+.mc-text-accent { color: var(--mc-accent-800); }
+.mc-text-center { text-align: center; }
+.mc-font-medium { font-weight: 500; }
+.mc-font-semibold { font-weight: 600; }
+.mc-font-bold { font-weight: 700; }
+
+// Surfaces
+.mc-card {
+  background: var(--mc-surface);
+  border-radius: var(--mc-radius-lg);
+  box-shadow: var(--mc-shadow-sm);
+  border: 1px solid var(--mc-border);
+  padding: var(--mc-space-4);
+}
+
+.mc-surface {
+  background: var(--mc-surface);
+}
+
+.mc-bg {
+  background: var(--mc-background);
+}
+
+// Status badges
+.mc-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15em 0.6em;
+  border-radius: var(--mc-radius-full);
+  font-size: var(--mc-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.mc-badge--available { background: #e8f5e9; color: var(--mc-status-available); }
+.mc-badge--occupied { background: #ffebee; color: var(--mc-status-occupied); }
+.mc-badge--cleaning { background: #fff8e1; color: var(--mc-status-cleaning); }
+.mc-badge--reserved { background: #e3f2fd; color: var(--mc-status-reserved); }
+.mc-badge--maintenance { background: #f5f5f5; color: var(--mc-status-maintenance); }
+
+// Truncate
+.mc-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Visually hidden (a11y)
+.mc-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Cursor
+.mc-pointer { cursor: pointer; }
+.mc-not-allowed { cursor: not-allowed; }
+
+// Responsive helpers
+@media (max-width: 767px) {
+  .mc-hide-mobile { display: none !important; }
+}
+@media (min-width: 768px) {
+  .mc-hide-desktop { display: none !important; }
+}
+
+/* Action / form pages – full width of main content pane */
+.mc-page-fluid {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: 0;
+}
+
+.mc-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  gap: var(--mc-space-3);
+  width: 100%;
+}
+
+.mc-form-grid__full {
+  grid-column: 1 / -1;
+}

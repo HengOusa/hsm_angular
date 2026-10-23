@@ -1,0 +1,104 @@
+.mc-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+
+  &__item {
+    display: flex;
+    gap: var(--mc-space-3);
+    padding-bottom: var(--mc-space-5);
+    position: relative;
+
+    &:not(.mc-timeline__item--last)::before {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 32px;
+      bottom: 0;
+      width: 2px;
+      background: var(--mc-border);
+    }
+  }
+
+  &__marker {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--mc-radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: var(--mc-primary-50);
+    color: var(--mc-primary-800);
+    z-index: 1;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+
+    &[data-color='accent'] {
+      background: var(--mc-accent-50);
+      color: var(--mc-accent-800);
+    }
+    &[data-color='alert'] {
+      background: var(--mc-alert-50);
+      color: var(--mc-alert-800);
+    }
+    &[data-color='warning'] {
+      background: var(--mc-warning-50);
+      color: var(--mc-warning-700);
+    }
+    &[data-color='neutral'] {
+      background: var(--mc-surface-variant);
+      color: var(--mc-text-secondary);
+    }
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+    padding-top: 4px;
+  }
+
+  &__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--mc-space-2);
+    flex-wrap: wrap;
+  }
+
+  &__title {
+    font-weight: 600;
+    font-size: var(--mc-font-size-sm);
+    color: var(--mc-text-primary);
+  }
+
+  &__time {
+    font-size: var(--mc-font-size-xs);
+    color: var(--mc-text-disabled);
+    white-space: nowrap;
+  }
+
+  &__subtitle {
+    margin: 0.25rem 0 0;
+    font-size: var(--mc-font-size-sm);
+    color: var(--mc-text-secondary);
+  }
+
+  &__meta {
+    display: inline-block;
+    margin-top: 0.25rem;
+    font-size: var(--mc-font-size-xs);
+    color: var(--mc-text-disabled);
+  }
+
+  &__empty {
+    color: var(--mc-text-secondary);
+    font-size: var(--mc-font-size-sm);
+    padding: var(--mc-space-4);
+  }
+}

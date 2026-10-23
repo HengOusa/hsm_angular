@@ -1,0 +1,171 @@
+<div class="mc-pharm" data-test="pharmacy-page">
+  <mc-page-header
+    title="Pharmacy"
+    subtitle="Inventory · prescription queue · interaction alerts"
+    icon="medication"
+  />
+
+  <section class="mc-pharm__stats">
+    <mc-stat-card
+      label="SKUs in view"
+      [value]="facade.drugs().length"
+      icon="inventory_2"
+      color="primary"
+    />
+    <mc-stat-card
+      label="Low stock"
+      [value]="facade.lowStockCount()"
+      icon="warning"
+      color="warning"
+    />
+    <mc-stat-card
+      label="Pending Rx"
+      [value]="facade.pendingRxCount()"
+      icon="medication"
+      color="alert"
+    />
+  </section>
+
+  <mat-tab-group animationDuration="150ms">
+    <mat-tab label="Prescription queue">
+      <div class="mc-pharm__panel">
+        <div class="mc-pharm__toolbar">
+          <mat-button-toggle-group
+            [value]="rxFilter()"
+            (change)="setRxFilter($event.value)"
+          >
+            <mat-button-toggle value="Pending">Pending</mat-button-toggle>
+            <mat-button-toggle value="Dispensed">Dispensed</mat-button-toggle>
+            <mat-button-toggle value="Cancelled">Cancelled</mat-button-toggle>
+            <mat-button-toggle value="ALL">All</mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+
+        @if (facade.loading() && facade.prescriptions().length === 0) {
+          <mc-loading-skeleton variant="card" [count]="3" />
+        } @else if (facade.prescriptions().length === 0) {
+          <mc-empty-state title="No prescriptions" message="Queue is empty for this filter." icon="medication" />
+        } @else {
+          <div class="mc-pharm__rx-list">
+            @for (rx of facade.prescriptions(); track rx.id) {
+              <article class="mc-rx-card mc-card" [attr.data-test]="'rx-' + rx.id">
+                <header class="mc-rx-card__head">
+                  <div>
+                    <h3 class="mc-h4">{{ rx.patientName }}</h3>
+                    <p class="mc-caption">
+                      <span class="mc-mono">{{ rx.prescriptionNumber }}</span>
+                      · {{ rx.doctorName }}
+                    </p>
+                  </div>
+                  <mc-status-badge [variant]="statusVariant(rx.status)" [label]="rx.status" />
+                </header>
+
+                @if (rx.interactionWarnings.length) {
+                  <mc-alert-banner
+                    variant="warning"
+                    title="Drug interaction"
+                    [message]="rx.interactionWarnings.join(' · ')"
+                    [dismissible]="false"
+                    class="mc-rx-card__alert"
+                  />
+                }
+
+                <ul class="mc-rx-card__meds">
+                  @for (m of rx.medications; track m.drugId) {
+                    <li>
+                      <strong>{{ m.drugName }}</strong>
+                      — {{ m.dosage }} {{ m.route }} · {{ m.frequency }} · {{ m.duration }}
+                      · Qty {{ m.quantity }}
+                      @if (m.instructions) {
+                        <span class="mc-caption"> · {{ m.instructions }}</span>
+                      }
+                    </li>
+                  }
+                </ul>
+
+                @if (rx.status === 'Pending') {
+                  <div class="mc-rx-card__actions">
+                    <button
+                      mat-flat-button
+                      color="primary"
+                      type="button"
+                      [disabled]="facade.saving()"
+                      (click)="dispense(rx.id)"
+                      data-test="rx-dispense"
+                    >
+                      Dispense
+                    </button>
+                    <button mat-button type="button" (click)="cancel(rx.id)">Cancel</button>
+                  </div>
+                } @else if (rx.dispensedAt) {
+                  <p class="mc-caption">
+                    Dispensed by {{ rx.dispensedBy }} · {{ rx.dispensedAt | date:'short' }}
+                  </p>
+                }
+              </article>
+            }
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Inventory">
+      <div class="mc-pharm__panel">
+        <div class="mc-pharm__toolbar">
+          <mc-search-bar
+            placeholder="Search drug name, generic, code…"
+            (search)="onSearch($event)"
+          />
+          <button
+            mat-stroked-button
+            type="button"
+            [color]="lowStockOnly() ? 'warn' : undefined"
+            (click)="toggleLowStock()"
+            data-test="filter-low-stock"
+          >
+            <mat-icon>warning</mat-icon>
+            Low stock only
+          </button>
+        </div>
+
+        @if (facade.loading() && facade.drugs().length === 0) {
+          <mc-loading-skeleton variant="table-row" [count]="5" />
+        } @else if (facade.drugs().length === 0) {
+          <mc-empty-state title="No drugs found" message="Adjust search or low-stock filter." icon="inventory_2" />
+        } @else {
+          <div class="mc-pharm__drug-grid">
+            @for (d of facade.drugs(); track d.id) {
+              <article
+                class="mc-drug-tile"
+                [class.mc-drug-tile--low]="isLowStock(d)"
+                [attr.data-test]="'drug-' + d.id"
+              >
+                <div class="mc-drug-tile__top">
+                  <span class="mc-drug-tile__name">{{ d.name }}</span>
+                  @if (d.controlled) {
+                    <mc-status-badge variant="critical" label="Controlled" [showDot]="false" />
+                  }
+                </div>
+                <div class="mc-drug-tile__meta">
+                  <span class="mc-mono">{{ d.code }}</span>
+                  · {{ d.genericName }} · {{ d.strength }} {{ d.form }}
+                </div>
+                <div class="mc-drug-tile__stock">
+                  <strong [class.mc-drug-tile__qty--low]="isLowStock(d)">{{ d.stockQty }}</strong>
+                  <span class="mc-caption">in stock (reorder ≤ {{ d.reorderLevel }})</span>
+                </div>
+                <div class="mc-drug-tile__foot">
+                  <span>{{ d.category }}</span>
+                  <span [class.mc-drug-tile__exp--soon]="isExpiringSoon(d)">
+                    Exp {{ d.expiryDate }}
+                  </span>
+                  <span class="mc-mono">${{ d.unitPrice | number:'1.2-2' }}</span>
+                </div>
+              </article>
+            }
+          </div>
+        }
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

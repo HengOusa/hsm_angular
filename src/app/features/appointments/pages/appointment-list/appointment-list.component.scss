@@ -1,0 +1,118 @@
+.mc-apts {
+  width: 100%;
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--mc-space-2);
+    margin-bottom: var(--mc-space-4);
+    flex-wrap: wrap;
+  }
+
+  &__date {
+    font-family: inherit;
+    font-size: var(--mc-font-size-sm);
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--mc-border);
+    border-radius: var(--mc-radius-md);
+    background: var(--mc-surface);
+    color: var(--mc-text-primary);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mc-space-2);
+  }
+}
+
+.mc-apt-card {
+  display: flex;
+  align-items: stretch;
+  gap: var(--mc-space-4);
+  padding: var(--mc-space-4);
+  background: var(--mc-surface);
+  border: 1px solid var(--mc-border);
+  border-radius: var(--mc-radius-lg);
+
+  &__time {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 4.5rem;
+    padding-right: var(--mc-space-3);
+    border-right: 2px solid var(--mc-primary-100);
+  }
+
+  &__start {
+    font-weight: 700;
+    font-size: var(--mc-font-size-md);
+    color: var(--mc-primary-800);
+  }
+
+  &__end {
+    font-size: var(--mc-font-size-xs);
+    color: var(--mc-text-disabled);
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    font-weight: 600;
+    font-size: var(--mc-font-size-md);
+  }
+
+  &__meta {
+    font-size: var(--mc-font-size-sm);
+    color: var(--mc-text-secondary);
+    margin-top: 0.15rem;
+  }
+
+  &__complaint {
+    margin-top: 0.35rem;
+    font-size: var(--mc-font-size-sm);
+    color: var(--mc-text-primary);
+  }
+
+  &__side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--mc-space-2);
+  }
+
+  &__type {
+    font-size: var(--mc-font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--mc-text-secondary);
+
+    &[data-type='Emergency'] {
+      color: var(--mc-alert-800);
+    }
+    &[data-type='Telemedicine'] {
+      color: var(--mc-primary-800);
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .mc-apt-card {
+    flex-wrap: wrap;
+
+    &__time {
+      border-right: none;
+      border-bottom: 2px solid var(--mc-primary-100);
+      flex-direction: row;
+      gap: 0.5rem;
+      width: 100%;
+      justify-content: flex-start;
+      padding-bottom: var(--mc-space-2);
+    }
+  }
+}

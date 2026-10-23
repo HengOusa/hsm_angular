@@ -1,0 +1,31 @@
+<div
+  class="mc-shell"
+  [class.mc-shell--collapsed]="sidebarCollapsed()"
+  [class.dark-theme]="darkMode()"
+>
+  @if (emergencyActive) {
+    <mc-emergency-banner class="mc-shell__emergency" />
+  }
+
+  <mc-sidebar
+    class="mc-shell__sidebar"
+    [collapsed]="sidebarCollapsed()"
+    (toggle)="toggleSidebar()"
+  />
+
+  <div class="mc-shell__main">
+    <mc-topbar
+      class="mc-shell__topbar"
+      [sidebarCollapsed]="sidebarCollapsed()"
+      (toggleSidebar)="toggleSidebar()"
+    />
+
+    <main class="mc-shell__content" role="main" id="main-content">
+      <div class="mc-shell__content-inner">
+        <router-outlet />
+      </div>
+    </main>
+  </div>
+
+  <mc-session-timeout />
+</div>

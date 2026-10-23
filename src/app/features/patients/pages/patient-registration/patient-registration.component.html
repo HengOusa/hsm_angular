@@ -1,0 +1,173 @@
+<div class="mc-reg" data-test="patient-registration">
+  <mc-page-header
+    title="Register patient"
+    subtitle="Multi-step registration · MRN assigned on save"
+    icon="person_add"
+  >
+    <a actions mat-button routerLink="/patients">
+      <mat-icon>arrow_back</mat-icon>
+      Back to list
+    </a>
+  </mc-page-header>
+
+  <mat-stepper linear class="mc-reg__stepper">
+    <mat-step [stepControl]="personal" label="Personal">
+      <form [formGroup]="personal" class="mc-reg__form">
+        <div class="mc-reg__grid">
+          <mat-form-field appearance="outline">
+            <mat-label>First name</mat-label>
+            <input matInput formControlName="firstName" data-test="reg-firstName" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Last name</mat-label>
+            <input matInput formControlName="lastName" data-test="reg-lastName" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Date of birth</mat-label>
+            <input matInput type="date" formControlName="dateOfBirth" data-test="reg-dob" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Gender</mat-label>
+            <mat-select formControlName="gender" data-test="reg-gender">
+              @for (g of genders; track g) {
+                <mat-option [value]="g">{{ g }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Blood group</mat-label>
+            <mat-select formControlName="bloodGroup" data-test="reg-blood">
+              <mat-option value="">Unknown</mat-option>
+              @for (b of bloodGroups; track b) {
+                <mat-option [value]="b">{{ b }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Phone</mat-label>
+            <input matInput formControlName="phone" data-test="reg-phone" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="mc-reg__full">
+            <mat-label>Address</mat-label>
+            <input matInput formControlName="address" />
+          </mat-form-field>
+        </div>
+        <div class="mc-reg__actions">
+          <button mat-flat-button color="primary" matStepperNext type="button" [disabled]="personal.invalid">
+            Next
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="clinical" label="Clinical">
+      <form [formGroup]="clinical" class="mc-reg__form">
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status" data-test="reg-status">
+            @for (s of statuses; track s) {
+              <mat-option [value]="s">{{ s }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <div class="mc-reg__chips-block">
+          <label class="mc-label">Allergies</label>
+          <div class="mc-reg__chip-input">
+            <mat-form-field appearance="outline" class="mc-reg__grow">
+              <mat-label>Add allergy</mat-label>
+              <input matInput [value]="allergyInput()" (input)="allergyInput.set($any($event.target).value)" (keydown.enter)="$event.preventDefault(); addAllergy()" />
+            </mat-form-field>
+            <button mat-stroked-button type="button" (click)="addAllergy()">Add</button>
+          </div>
+          <div class="mc-reg__chips">
+            @for (a of clinical.controls.allergies.value; track a) {
+              <span class="mc-reg__chip mc-reg__chip--alert">
+                {{ a }}
+                <button type="button" (click)="removeAllergy(a)" aria-label="Remove">×</button>
+              </span>
+            }
+          </div>
+        </div>
+
+        <div class="mc-reg__chips-block">
+          <label class="mc-label">Chronic conditions</label>
+          <div class="mc-reg__chip-input">
+            <mat-form-field appearance="outline" class="mc-reg__grow">
+              <mat-label>Add condition</mat-label>
+              <input matInput [value]="conditionInput()" (input)="conditionInput.set($any($event.target).value)" (keydown.enter)="$event.preventDefault(); addCondition()" />
+            </mat-form-field>
+            <button mat-stroked-button type="button" (click)="addCondition()">Add</button>
+          </div>
+          <div class="mc-reg__chips">
+            @for (c of clinical.controls.chronicConditions.value; track c) {
+              <span class="mc-reg__chip">
+                {{ c }}
+                <button type="button" (click)="removeCondition(c)" aria-label="Remove">×</button>
+              </span>
+            }
+          </div>
+        </div>
+
+        <div class="mc-reg__actions">
+          <button mat-button matStepperPrevious type="button">Back</button>
+          <button mat-flat-button color="primary" matStepperNext type="button">Next</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step label="Contacts & insurance">
+      <form [formGroup]="contacts" class="mc-reg__form">
+        <h4 class="mc-h4">Emergency contact</h4>
+        <div class="mc-reg__grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="emergencyName" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Relation</mat-label>
+            <input matInput formControlName="emergencyRelation" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Phone</mat-label>
+            <input matInput formControlName="emergencyPhone" />
+          </mat-form-field>
+        </div>
+
+        <h4 class="mc-h4">Insurance</h4>
+        <div class="mc-reg__grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Provider</mat-label>
+            <input matInput formControlName="insuranceProvider" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Policy number</mat-label>
+            <input matInput formControlName="insurancePolicy" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Validity</mat-label>
+            <input matInput type="date" formControlName="insuranceValidity" />
+          </mat-form-field>
+        </div>
+
+        <div class="mc-reg__actions">
+          <button mat-button matStepperPrevious type="button">Back</button>
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            (click)="submit()"
+            [disabled]="facade.saving() || personal.invalid"
+            data-test="reg-submit"
+          >
+            @if (facade.saving()) { Saving… } @else { Register patient }
+          </button>
+        </div>
+      </form>
+    </mat-step>
+  </mat-stepper>
+</div>

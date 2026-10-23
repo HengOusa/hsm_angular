@@ -1,0 +1,91 @@
+<div class="mc-patients" data-test="patients-page">
+  <mc-page-header
+    title="Patients"
+    subtitle="Search, register, and manage patient records"
+    icon="personal_injury"
+  >
+    <a actions mat-flat-button color="primary" routerLink="/patients/register" data-test="btn-register-patient">
+      <mat-icon>person_add</mat-icon>
+      Register patient
+    </a>
+  </mc-page-header>
+
+  <div class="mc-patients__toolbar">
+    <mc-search-bar
+      placeholder="Search by name, MRN, phone…"
+      (search)="onSearch($event)"
+      testId="patient-search"
+    />
+    <mat-button-toggle-group
+      [value]="facade.statusFilter()"
+      (change)="onStatus($event.value)"
+      class="mc-patients__filters"
+      data-test="patient-status-filter"
+    >
+      @for (opt of statusOptions; track opt.value) {
+        <mat-button-toggle [value]="opt.value">{{ opt.label }}</mat-button-toggle>
+      }
+    </mat-button-toggle-group>
+  </div>
+
+  @if (facade.loading()) {
+    <div class="mc-patients__list">
+      @for (i of [1, 2, 3, 4, 5]; track i) {
+        <mc-loading-skeleton variant="card" />
+      }
+    </div>
+  } @else if (facade.patients().length === 0) {
+    <mc-empty-state
+      title="No patients found"
+      message="Try another search or register a new patient."
+      icon="personal_injury"
+    >
+      <a actions mat-flat-button color="primary" routerLink="/patients/register">Register patient</a>
+    </mc-empty-state>
+  } @else {
+    <div class="mc-patients__list" data-test="patient-list">
+      @for (p of facade.patients(); track p.id) {
+        <a class="mc-patient-row" [routerLink]="['/patients', p.id]" [attr.data-test]="'patient-row-' + p.id">
+          <div class="mc-patient-row__avatar" aria-hidden="true">
+            {{ p.firstName.charAt(0) }}{{ p.lastName.charAt(0) }}
+          </div>
+          <div class="mc-patient-row__main">
+            <div class="mc-patient-row__name">{{ fullName(p) }}</div>
+            <div class="mc-patient-row__meta">
+              <span class="mc-mono">{{ p.mrn }}</span>
+              <span>·</span>
+              <span>{{ p.dateOfBirth | mcAge:'full' }}</span>
+              <span>·</span>
+              <span>{{ p.gender }}</span>
+              @if (p.bloodGroup) {
+                <span>·</span>
+                <span>{{ p.bloodGroup }}</span>
+              }
+            </div>
+            @if (p.allergies.length) {
+              <div class="mc-patient-row__allergies">
+                <mat-icon>warning</mat-icon>
+                {{ p.allergies.join(', ') }}
+              </div>
+            }
+          </div>
+          <div class="mc-patient-row__side">
+            <mc-status-badge [variant]="statusVariant(p.status)" [label]="p.status" />
+            <span class="mc-patient-row__phone">{{ p.phone }}</span>
+          </div>
+        </a>
+      }
+    </div>
+
+    @if (facade.total() > facade.pageSize()) {
+      <mat-paginator
+        [length]="facade.total()"
+        [pageIndex]="facade.page()"
+        [pageSize]="facade.pageSize()"
+        [pageSizeOptions]="[5, 10, 25]"
+        (page)="onPage($event)"
+        showFirstLastButtons
+      />
+    }
+  }
+</div>

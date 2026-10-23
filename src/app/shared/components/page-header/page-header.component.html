@@ -1,0 +1,18 @@
+<header class="mc-page-header" [attr.data-test]="testId()">
+  <div class="mc-page-header__left">
+    @if (icon()) {
+      <div class="mc-page-header__icon" aria-hidden="true">
+        <mat-icon>{{ icon() }}</mat-icon>
+      </div>
+    }
+    <div class="mc-page-header__text">
+      <h1 class="mc-h1 mc-page-header__title">{{ title() }}</h1>
+      @if (subtitle()) {
+        <p class="mc-caption mc-page-header__subtitle">{{ subtitle() }}</p>
+      }
+    </div>
+  </div>
+  <div class="mc-page-header__actions">
+    <ng-content select="[actions]"></ng-content>
+  </div>
+</header>

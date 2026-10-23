@@ -1,0 +1,141 @@
+.mc-lab {
+  width: 100%;
+  max-width: 100%;
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
+    gap: var(--mc-space-3);
+    margin-bottom: var(--mc-space-4);
+    width: 100%;
+  }
+
+  &__panel {
+    padding: var(--mc-space-4) 0;
+    width: 100%;
+  }
+
+  &__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mc-space-3);
+    align-items: center;
+    margin-bottom: var(--mc-space-4);
+    width: 100%;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mc-space-3);
+    width: 100%;
+  }
+
+  &__order {
+    width: 100%;
+    padding: var(--mc-space-6);
+  }
+
+  &__catalog {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: var(--mc-space-3) 0 var(--mc-space-5);
+    width: 100%;
+  }
+
+  &__cat-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--mc-border);
+    border-radius: var(--mc-radius-md);
+    cursor: pointer;
+    font-size: var(--mc-font-size-sm);
+
+    input {
+      margin-top: 0.2rem;
+    }
+
+    &:hover {
+      background: var(--mc-surface-variant);
+    }
+  }
+}
+
+.mc-lab-card {
+  width: 100%;
+
+  &--critical {
+    border-color: var(--mc-alert-800);
+    box-shadow: 0 0 0 1px rgba(198, 40, 40, 0.2);
+  }
+
+  &__head {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--mc-space-3);
+    flex-wrap: wrap;
+    margin-bottom: var(--mc-space-2);
+  }
+
+  &__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mc-space-3);
+    font-size: var(--mc-font-size-xs);
+    color: var(--mc-text-secondary);
+    margin-bottom: var(--mc-space-2);
+  }
+
+  &__result {
+    margin: 0 0 var(--mc-space-2);
+    font-size: var(--mc-font-size-sm);
+  }
+
+  &__alert {
+    display: block;
+    margin-bottom: var(--mc-space-3);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--mc-space-2);
+  }
+
+  &__result-entry {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mc-space-2);
+    align-items: center;
+  }
+
+  &__input {
+    font-family: inherit;
+    font-size: var(--mc-font-size-sm);
+    padding: 0.45rem 0.65rem;
+    border: 1px solid var(--mc-border);
+    border-radius: var(--mc-radius-md);
+    min-width: 8rem;
+    background: var(--mc-background);
+    color: var(--mc-text-primary);
+  }
+}
+
+:host ::ng-deep {
+  .mat-mdc-form-field {
+    width: 100%;
+  }
+  .mat-mdc-tab-body-wrapper {
+    width: 100%;
+  }
+}

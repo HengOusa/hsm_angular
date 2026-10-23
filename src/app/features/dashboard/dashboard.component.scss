@@ -1,0 +1,101 @@
+.mc-dashboard {
+  width: 100%;
+  max-width: 100%;
+
+  &__alert {
+    display: block;
+    margin-bottom: var(--mc-space-4);
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr));
+    gap: var(--mc-space-3);
+    margin-bottom: var(--mc-space-5);
+    width: 100%;
+  }
+
+  &__panels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: var(--mc-space-4);
+    width: 100%;
+  }
+
+  &__panel {
+    padding: var(--mc-space-4);
+    min-height: 12rem;
+  }
+
+  &__panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--mc-space-2);
+    margin-bottom: var(--mc-space-3);
+  }
+
+  &__link {
+    font-size: var(--mc-font-size-sm);
+    font-weight: 600;
+    color: var(--mc-primary-800);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__wards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--mc-space-3);
+  }
+
+  &__ward-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--mc-font-size-sm);
+    margin-bottom: 0.35rem;
+  }
+
+  &__bar {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--mc-surface-variant);
+    overflow: hidden;
+  }
+
+  &__bar-fill {
+    display: block;
+    height: 100%;
+    background: var(--mc-status-occupied);
+    border-radius: 4px;
+    min-width: 0;
+  }
+
+  &__quick {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mc-space-2);
+
+    a {
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--mc-radius-full);
+      border: 1px solid var(--mc-border);
+      background: var(--mc-background);
+      color: var(--mc-primary-800);
+      font-size: var(--mc-font-size-sm);
+      font-weight: 600;
+      text-decoration: none;
+
+      &:hover {
+        border-color: var(--mc-primary-300);
+        background: var(--mc-primary-50);
+      }
+    }
+  }
+}

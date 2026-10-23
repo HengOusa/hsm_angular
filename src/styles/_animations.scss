@@ -1,0 +1,77 @@
+// MediCore Animations
+
+@keyframes mc-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes mc-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mc-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes mc-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes mc-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes mc-skeleton {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.mc-fade-in {
+  animation: mc-fade-in var(--mc-transition-base) ease forwards;
+}
+
+.mc-slide-up {
+  animation: mc-slide-up var(--mc-transition-base) ease forwards;
+}
+
+.mc-pulse {
+  animation: mc-pulse 1.5s ease-in-out infinite;
+}
+
+.mc-spin {
+  animation: mc-spin 0.8s linear infinite;
+}
+
+// Skeleton loader
+.mc-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--mc-surface-variant) 25%,
+    var(--mc-border) 50%,
+    var(--mc-surface-variant) 75%
+  );
+  background-size: 200% 100%;
+  animation: mc-skeleton 1.5s ease-in-out infinite;
+  border-radius: var(--mc-radius-md);
+}
+
+// Emergency pulse (code blue etc.)
+.mc-emergency-pulse {
+  animation: mc-pulse 1s ease-in-out infinite;
+  box-shadow: 0 0 0 0 rgba(198, 40, 40, 0.4);
+}

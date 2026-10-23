@@ -1,0 +1,148 @@
+.mc-er {
+  width: 100%;
+  max-width: 100%;
+
+  &__banner {
+    display: block;
+    margin-bottom: var(--mc-space-4);
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
+    gap: var(--mc-space-3);
+    margin-bottom: var(--mc-space-4);
+    width: 100%;
+  }
+
+  &__panel {
+    padding: var(--mc-space-4) 0;
+    width: 100%;
+  }
+
+  &__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mc-space-3);
+    margin-bottom: var(--mc-space-3);
+    width: 100%;
+  }
+
+  &__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mc-space-4);
+    margin-bottom: var(--mc-space-4);
+    font-size: var(--mc-font-size-xs);
+    color: var(--mc-text-secondary);
+
+    span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+  }
+
+  &__board {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mc-space-3);
+    width: 100%;
+  }
+
+  &__form {
+    width: 100%;
+    padding: var(--mc-space-6);
+  }
+}
+
+.mc-er-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+
+  &--immediate { background: var(--mc-triage-immediate); }
+  &--urgent { background: var(--mc-triage-urgent); }
+  &--less { background: var(--mc-triage-less-urgent); }
+  &--non { background: var(--mc-triage-non-urgent); }
+}
+
+.mc-er-card {
+  display: flex;
+  background: var(--mc-surface);
+  border: 1px solid var(--mc-border);
+  border-radius: var(--mc-radius-lg);
+  overflow: hidden;
+  width: 100%;
+
+  &[data-triage='Immediate'] {
+    box-shadow: 0 0 0 1px rgba(198, 40, 40, 0.25);
+  }
+
+  &__acuity {
+    width: 8px;
+    flex-shrink: 0;
+    background: var(--mc-triage-non-urgent);
+
+    &[data-triage='Immediate'] { background: var(--mc-triage-immediate); }
+    &[data-triage='Urgent'] { background: var(--mc-triage-urgent); }
+    &[data-triage='LessUrgent'] { background: var(--mc-triage-less-urgent); }
+    &[data-triage='NonUrgent'] { background: var(--mc-triage-non-urgent); }
+    &[data-triage='Deceased'] { background: var(--mc-triage-deceased); }
+  }
+
+  &__body {
+    flex: 1;
+    padding: var(--mc-space-4);
+    min-width: 0;
+  }
+
+  &__head {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--mc-space-3);
+    flex-wrap: wrap;
+    margin-bottom: var(--mc-space-2);
+  }
+
+  &__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  &__complaint {
+    margin: 0 0 var(--mc-space-2);
+    font-size: var(--mc-font-size-sm);
+    font-weight: 500;
+    color: var(--mc-text-primary);
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mc-space-3);
+    font-size: var(--mc-font-size-xs);
+    color: var(--mc-text-secondary);
+    margin-bottom: var(--mc-space-2);
+  }
+
+  &__interventions {
+    margin: 0 0 var(--mc-space-2);
+    font-size: var(--mc-font-size-xs);
+    color: var(--mc-text-disabled);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mc-space-2);
+    margin-top: var(--mc-space-2);
+  }
+}
+
+:host ::ng-deep {
+  .mat-mdc-form-field { width: 100%; }
+  .mat-mdc-tab-body-wrapper { width: 100%; }
+}

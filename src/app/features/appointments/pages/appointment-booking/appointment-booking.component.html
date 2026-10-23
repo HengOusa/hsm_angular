@@ -1,0 +1,104 @@
+<div class="mc-book" data-test="appointment-booking">
+  <mc-page-header
+    title="Book appointment"
+    subtitle="Select doctor, date, and an available slot (conflicts blocked)"
+    icon="event"
+  >
+    <a actions mat-button routerLink="/appointments">
+      <mat-icon>arrow_back</mat-icon>
+      Day board
+    </a>
+  </mc-page-header>
+
+  @if (facade.error()) {
+    <mc-alert-banner
+      variant="error"
+      [message]="facade.error()!"
+      (dismissed)="facade.clearError()"
+      class="mc-book__alert"
+    />
+  }
+
+  <form class="mc-book__form mc-card" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="mc-book__grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Patient</mat-label>
+        <mat-select formControlName="patientId" data-test="book-patient">
+          @for (p of patients; track p.id) {
+            <mat-option [value]="p.id">{{ p.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Doctor</mat-label>
+        <mat-select formControlName="doctorId" data-test="book-doctor">
+          @for (d of doctors; track d.id) {
+            <mat-option [value]="d.id">{{ d.name }} · {{ d.departmentName }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Date</mat-label>
+        <input matInput type="date" formControlName="date" data-test="book-date" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+          @for (t of types; track t) {
+            <mat-option [value]="t">{{ t }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="mc-book__full">
+        <mat-label>Chief complaint</mat-label>
+        <input matInput formControlName="chiefComplaint" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="mc-book__full">
+        <mat-label>Notes</mat-label>
+        <textarea matInput rows="2" formControlName="notes"></textarea>
+      </mat-form-field>
+    </div>
+
+    <h3 class="mc-h4">Available slots</h3>
+    <p class="mc-caption">Gray slots are already booked for this doctor on the selected date.</p>
+
+    @if (facade.slotsLoading()) {
+      <p class="mc-text-secondary">Loading slots…</p>
+    } @else {
+      <div class="mc-book__slots" role="listbox" aria-label="Time slots">
+        @for (s of facade.slots(); track s.startTime) {
+          <button
+            type="button"
+            class="mc-book__slot"
+            [class.mc-book__slot--busy]="!s.available"
+            [class.mc-book__slot--selected]="selectedSlot() === s.startTime"
+            [disabled]="!s.available"
+            (click)="pickSlot(s.startTime, s.available)"
+            [attr.aria-selected]="selectedSlot() === s.startTime"
+            [attr.data-test]="'slot-' + s.startTime"
+          >
+            {{ s.startTime }}
+          </button>
+        }
+      </div>
+    }
+
+    <div class="mc-book__actions">
+      <a mat-button routerLink="/appointments">Cancel</a>
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="form.invalid || !selectedSlot() || facade.saving()"
+        data-test="book-submit"
+      >
+        @if (facade.saving()) { Booking… } @else { Confirm booking }
+      </button>
+    </div>
+  </form>
+</div>

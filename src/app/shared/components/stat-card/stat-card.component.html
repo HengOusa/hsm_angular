@@ -1,0 +1,19 @@
+<article
+  class="mc-stat-card"
+  [attr.data-test]="testId()"
+  [attr.data-color]="color()"
+>
+  <div class="mc-stat-card__icon" [attr.data-color]="color()" aria-hidden="true">
+    <mat-icon>{{ icon() }}</mat-icon>
+  </div>
+  <div class="mc-stat-card__body">
+    <span class="mc-stat-card__label">{{ label() }}</span>
+    <span class="mc-stat-card__value">{{ value() }}</span>
+    @if (trend()) {
+      <span class="mc-stat-card__trend">{{ trend() }}</span>
+    }
+    @if (subtitle()) {
+      <span class="mc-stat-card__subtitle">{{ subtitle() }}</span>
+    }
+  </div>
+</article>

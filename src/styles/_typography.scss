@@ -1,0 +1,79 @@
+// MediCore Typography – Inter + JetBrains Mono
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+body {
+  font-family: var(--mc-font-family);
+  font-size: var(--mc-font-size-base);
+  line-height: 1.5;
+  color: var(--mc-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, .mc-h1 {
+  font-size: var(--mc-font-size-3xl);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+h2, .mc-h2 {
+  font-size: var(--mc-font-size-2xl);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+h3, .mc-h3 {
+  font-size: var(--mc-font-size-xl);
+  font-weight: 600;
+  line-height: 1.35;
+  margin: 0;
+}
+
+h4, .mc-h4 {
+  font-size: var(--mc-font-size-lg);
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.mc-body {
+  font-size: var(--mc-font-size-base);
+  font-weight: 400;
+}
+
+.mc-body-sm {
+  font-size: var(--mc-font-size-sm);
+  font-weight: 400;
+}
+
+.mc-caption {
+  font-size: var(--mc-font-size-xs);
+  font-weight: 400;
+  color: var(--mc-text-secondary);
+}
+
+.mc-label {
+  font-size: var(--mc-font-size-sm);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.mc-mono {
+  font-family: var(--mc-font-mono);
+  font-size: 0.9em;
+}
+
+// Medical codes (ICD-10, etc.)
+.mc-medical-code {
+  font-family: var(--mc-font-mono);
+  font-weight: 500;
+  background: var(--mc-surface-variant);
+  padding: 0.1em 0.4em;
+  border-radius: var(--mc-radius-sm);
+  font-size: 0.85em;
+}

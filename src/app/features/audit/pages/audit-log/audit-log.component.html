@@ -1,0 +1,59 @@
+<div class="mc-audit" data-test="audit-page">
+  <mc-page-header
+    title="Audit log"
+    subtitle="Who did what · when · on which resource (HIPAA-oriented trail)"
+    icon="history"
+  />
+
+  <div class="mc-audit__toolbar">
+    <mc-search-bar placeholder="User, resource, details…" (search)="onSearch($event)" />
+    <mat-button-toggle-group [value]="actionFilter()" (change)="setAction($event.value)">
+      @for (a of actions; track a) {
+        <mat-button-toggle [value]="a">{{ a }}</mat-button-toggle>
+      }
+    </mat-button-toggle-group>
+  </div>
+
+  @if (facade.loading() && facade.entries().length === 0) {
+    <mc-loading-skeleton variant="table-row" [count]="6" />
+  } @else if (facade.entries().length === 0) {
+    <mc-empty-state title="No audit entries" message="Try another filter." icon="history" />
+  } @else {
+    <div class="mc-audit__table-wrap">
+      <table class="mc-audit__table">
+        <thead>
+          <tr>
+            <th>When</th>
+            <th>User</th>
+            <th>Action</th>
+            <th>Resource</th>
+            <th>Details</th>
+            <th>IP</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (e of facade.entries(); track e.id) {
+            <tr [attr.data-test]="'audit-' + e.id">
+              <td>
+                <span class="mc-mono">{{ e.timestamp | date:'short' }}</span>
+                <div class="mc-caption">{{ e.timestamp | mcTimeAgo }}</div>
+              </td>
+              <td>{{ e.userName }}</td>
+              <td>
+                <mc-status-badge [variant]="actionVariant(e.action)" [label]="e.action" [showDot]="false" />
+              </td>
+              <td>
+                <span>{{ e.resource }}</span>
+                @if (e.resourceId) {
+                  <div class="mc-mono mc-caption">{{ e.resourceId }}</div>
+                }
+              </td>
+              <td>{{ e.details }}</td>
+              <td class="mc-mono mc-caption">{{ e.ip || '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

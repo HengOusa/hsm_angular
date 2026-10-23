@@ -1,0 +1,79 @@
+@use './variables';
+@use './typography';
+@use './theme';
+@use './utilities';
+@use './animations';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  width: 100%;
+  /* Prevent horizontal scroll from 100vw + scrollbar */
+  overflow-x: hidden;
+}
+
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--mc-background);
+  color: var(--mc-text-primary);
+  overflow-x: hidden;
+}
+
+/* Root host fills viewport */
+mc-root {
+  display: block;
+  height: 100%;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+:focus-visible {
+  outline: 2px solid var(--mc-primary-800);
+  outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--mc-surface-variant);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--mc-border);
+  border-radius: var(--mc-radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--mc-text-disabled);
+}
+
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button,
+.mat-mdc-unelevated-button {
+  font-weight: 500 !important;
+  letter-spacing: 0.02em;
+}
+
+@media print {
+  .mc-no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+}

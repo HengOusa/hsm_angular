@@ -1,0 +1,187 @@
+<div class="mc-er" data-test="emergency-page">
+  <mc-page-header
+    title="Emergency Department"
+    subtitle="Triage board · acuity-ordered active cases"
+    icon="emergency"
+  />
+
+  @if (facade.immediateCount() > 0) {
+    <mc-alert-banner
+      variant="critical"
+      title="Immediate acuity"
+      [message]="facade.immediateCount() + ' immediate case(s) on the board — prioritize resus resources.'"
+      [dismissible]="false"
+      class="mc-er__banner"
+    />
+  }
+
+  <section class="mc-er__stats">
+    <mc-stat-card label="Active cases" [value]="facade.activeCount()" icon="monitor_heart" color="primary" />
+    <mc-stat-card label="Immediate" [value]="facade.immediateCount()" icon="emergency" color="alert" />
+    <mc-stat-card label="On board" [value]="facade.cases().length" icon="groups" color="neutral" />
+  </section>
+
+  <mat-tab-group animationDuration="150ms">
+    <mat-tab label="Board">
+      <div class="mc-er__panel">
+        <div class="mc-er__toolbar">
+          <mat-button-toggle-group
+            [value]="facade.statusFilter()"
+            (change)="facade.setStatusFilter($event.value)"
+          >
+            <mat-button-toggle value="ACTIVE">Active</mat-button-toggle>
+            <mat-button-toggle value="ALL">All</mat-button-toggle>
+            <mat-button-toggle value="Discharged">Discharged</mat-button-toggle>
+          </mat-button-toggle-group>
+          <mat-button-toggle-group
+            [value]="facade.triageFilter()"
+            (change)="facade.setTriageFilter($event.value)"
+          >
+            <mat-button-toggle value="ALL">All acuity</mat-button-toggle>
+            <mat-button-toggle value="Immediate">Immediate</mat-button-toggle>
+            <mat-button-toggle value="Urgent">Urgent</mat-button-toggle>
+            <mat-button-toggle value="LessUrgent">Less urgent</mat-button-toggle>
+            <mat-button-toggle value="NonUrgent">Non-urgent</mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+
+        <!-- Acuity legend -->
+        <div class="mc-er__legend" aria-hidden="true">
+          <span><i class="mc-er-dot mc-er-dot--immediate"></i> Immediate</span>
+          <span><i class="mc-er-dot mc-er-dot--urgent"></i> Urgent</span>
+          <span><i class="mc-er-dot mc-er-dot--less"></i> Less urgent</span>
+          <span><i class="mc-er-dot mc-er-dot--non"></i> Non-urgent</span>
+        </div>
+
+        @if (facade.loading() && facade.cases().length === 0) {
+          <mc-loading-skeleton variant="card" [count]="3" />
+        } @else if (facade.cases().length === 0) {
+          <mc-empty-state title="No cases" message="Register a new arrival or clear filters." icon="emergency" />
+        } @else {
+          <div class="mc-er__board">
+            @for (c of facade.cases(); track c.id) {
+              <article
+                class="mc-er-card"
+                [attr.data-triage]="c.triageLevel"
+                [attr.data-test]="'er-' + c.id"
+              >
+                <div class="mc-er-card__acuity" [attr.data-triage]="c.triageLevel"></div>
+                <div class="mc-er-card__body">
+                  <header class="mc-er-card__head">
+                    <div>
+                      <h3 class="mc-h4">{{ c.patientName }}</h3>
+                      <p class="mc-caption">
+                        <span class="mc-mono">{{ c.caseNumber }}</span>
+                        @if (c.ageYears) { · {{ c.ageYears }}y }
+                        @if (c.gender) { · {{ c.gender }} }
+                        · {{ c.arrivalMode }}
+                      </p>
+                    </div>
+                    <div class="mc-er-card__badges">
+                      <mc-status-badge [variant]="triageVariant(c.triageLevel)" [label]="c.triageLevel" />
+                      <mc-status-badge [variant]="statusVariant(c.status)" [label]="c.status" />
+                    </div>
+                  </header>
+
+                  <p class="mc-er-card__complaint">{{ c.chiefComplaint }}</p>
+
+                  <div class="mc-er-card__meta">
+                    <span>Wait {{ waitMinutes(c) }} min</span>
+                    @if (c.assignedRoom) { <span>Room {{ c.assignedRoom }}</span> }
+                    @if (c.assignedDoctor) { <span>{{ c.assignedDoctor }}</span> }
+                    <span>{{ c.arrivalTime | mcTimeAgo }}</span>
+                  </div>
+
+                  @if (c.interventions.length) {
+                    <p class="mc-er-card__interventions">
+                      {{ c.interventions.join(' · ') }}
+                    </p>
+                  }
+
+                  @if (c.status === 'Triaging' || c.status === 'InProgress') {
+                    <div class="mc-er-card__actions">
+                      @if (c.status === 'Triaging') {
+                        <button mat-flat-button color="primary" type="button" (click)="startCare(c)">
+                          Start care
+                        </button>
+                      }
+                      <button mat-stroked-button type="button" (click)="admit(c)">Admit</button>
+                      <button mat-button type="button" (click)="discharge(c)">Discharge</button>
+                      @if (c.triageLevel !== 'Immediate') {
+                        <button mat-button color="warn" type="button" (click)="trauma(c)">
+                          Trauma team
+                        </button>
+                      }
+                    </div>
+                  } @else if (c.disposition) {
+                    <p class="mc-caption">{{ c.disposition }}</p>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <mat-tab label="New arrival">
+      <div class="mc-er__panel">
+        <form class="mc-er__form mc-card" [formGroup]="form" (ngSubmit)="submit()">
+          <h3 class="mc-h4">Register ER arrival</h3>
+          <div class="mc-form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Patient name</mat-label>
+              <input matInput formControlName="patientName" data-test="er-name" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Age (years)</mat-label>
+              <input matInput type="number" formControlName="ageYears" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Gender</mat-label>
+              <mat-select formControlName="gender">
+                <mat-option value="Male">Male</mat-option>
+                <mat-option value="Female">Female</mat-option>
+                <mat-option value="Other">Other</mat-option>
+                <mat-option value="Unknown">Unknown</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Triage level</mat-label>
+              <mat-select formControlName="triageLevel" data-test="er-triage">
+                @for (t of triageLevels; track t) {
+                  <mat-option [value]="t">{{ t }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Arrival mode</mat-label>
+              <mat-select formControlName="arrivalMode">
+                @for (m of arrivalModes; track m) {
+                  <mat-option [value]="m">{{ m }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="mc-form-grid__full">
+              <mat-label>Chief complaint</mat-label>
+              <textarea matInput rows="2" formControlName="chiefComplaint" data-test="er-complaint"></textarea>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="mc-form-grid__full">
+              <mat-label>Notes</mat-label>
+              <input matInput formControlName="notes" />
+            </mat-form-field>
+          </div>
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="form.invalid || facade.saving()"
+            data-test="er-submit"
+          >
+            @if (facade.saving()) { Saving… } @else { Add to board }
+          </button>
+        </form>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

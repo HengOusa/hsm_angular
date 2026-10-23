@@ -1,0 +1,86 @@
+<div class="mc-settings" data-test="settings-page">
+  <mc-page-header
+    title="Settings"
+    subtitle="Preferences · appearance · clinical alerts"
+    icon="settings"
+  />
+
+  <div class="mc-settings__layout">
+    <form class="mc-settings__form mc-card" [formGroup]="form" (ngSubmit)="save()">
+      <h3 class="mc-h4">General</h3>
+      <div class="mc-form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Default landing page</mat-label>
+          <mat-select formControlName="defaultLanding">
+            <mat-option value="/dashboard">Dashboard</mat-option>
+            <mat-option value="/patients">Patients</mat-option>
+            <mat-option value="/emergency">Emergency</mat-option>
+            <mat-option value="/beds">Ward & Beds</mat-option>
+            <mat-option value="/notifications">Notifications</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>UI density</mat-label>
+          <mat-select formControlName="density">
+            <mat-option value="comfortable">Comfortable</mat-option>
+            <mat-option value="compact">Compact</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Language</mat-label>
+          <mat-select formControlName="language">
+            <mat-option value="en">English</mat-option>
+            <mat-option value="ar">Arabic</mat-option>
+            <mat-option value="fr">French</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Date format</mat-label>
+          <mat-select formControlName="dateFormat">
+            <mat-option value="YMD">YYYY-MM-DD</mat-option>
+            <mat-option value="DMY">DD/MM/YYYY</mat-option>
+            <mat-option value="MDY">MM/DD/YYYY</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Session warning (minutes)</mat-label>
+          <input matInput type="number" formControlName="sessionWarningMinutes" />
+        </mat-form-field>
+      </div>
+
+      <h3 class="mc-h4">Alerts</h3>
+      <div class="mc-settings__toggles">
+        <mat-slide-toggle formControlName="soundAlerts">Sound alerts</mat-slide-toggle>
+        <mat-slide-toggle formControlName="desktopNotifications">Desktop notifications</mat-slide-toggle>
+        <mat-slide-toggle formControlName="criticalLabPopup">Critical lab popup</mat-slide-toggle>
+      </div>
+
+      <h3 class="mc-h4">Appearance</h3>
+      <div class="mc-settings__theme">
+        <button mat-stroked-button type="button" (click)="toggleTheme()">
+          <mat-icon>{{ darkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+          {{ darkMode() ? 'Switch to light mode' : 'Switch to dark mode' }}
+        </button>
+      </div>
+
+      <div class="mc-settings__actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || facade.saving()" data-test="settings-save">
+          @if (facade.saving()) { Saving… } @else { Save preferences }
+        </button>
+        <button mat-button type="button" (click)="reset()">Reset defaults</button>
+        <a mat-button routerLink="/audit">View audit log</a>
+      </div>
+    </form>
+
+    <aside class="mc-settings__side mc-card">
+      <h3 class="mc-h4">About MediCore</h3>
+      <p class="mc-caption">Version 1.0.0 · Lessons 1–14</p>
+      <p>Preferences are stored in this browser (localStorage). Clinical data in this demo uses in-memory mocks.</p>
+      <ul class="mc-settings__links">
+        <li><a routerLink="/notifications">Notifications</a></li>
+        <li><a routerLink="/reports">Operations report</a></li>
+        <li><a routerLink="/audit">Audit trail</a></li>
+      </ul>
+    </aside>
+  </div>
+</div>

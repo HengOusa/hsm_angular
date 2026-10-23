@@ -1,0 +1,115 @@
+.mc-notif {
+  width: 100%;
+  max-width: 100%;
+
+  &__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mc-space-3);
+    align-items: center;
+    margin-bottom: var(--mc-space-4);
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--mc-space-2);
+    width: 100%;
+  }
+
+  &__item {
+    display: flex;
+    gap: var(--mc-space-3);
+    padding: var(--mc-space-3) var(--mc-space-4);
+    background: var(--mc-surface);
+    border: 1px solid var(--mc-border);
+    border-radius: var(--mc-radius-lg);
+    width: 100%;
+
+    &--unread {
+      border-left: 4px solid var(--mc-primary-800);
+      background: var(--mc-primary-50);
+    }
+
+    p {
+      margin: 0.25rem 0;
+      font-size: var(--mc-font-size-sm);
+      color: var(--mc-text-primary);
+    }
+  }
+
+  &__icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--mc-radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: var(--mc-surface-variant);
+    color: var(--mc-text-secondary);
+
+    mat-icon {
+      font-size: 1.15rem;
+      width: 1.15rem;
+      height: 1.15rem;
+    }
+
+    &[data-type='critical'],
+    &[data-type='emergency'] {
+      background: #fdecea;
+      color: var(--mc-alert-800);
+    }
+
+    &[data-type='warning'],
+    &[data-type='roster'],
+    &[data-type='pharmacy'] {
+      background: #fff8e1;
+      color: var(--mc-warning-700);
+    }
+
+    &[data-type='lab'] {
+      background: var(--mc-primary-50);
+      color: var(--mc-primary-800);
+    }
+  }
+
+  &__title-row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--mc-space-2);
+    flex-wrap: wrap;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mc-space-3);
+    align-items: center;
+    margin-top: 0.25rem;
+
+    a {
+      font-size: var(--mc-font-size-sm);
+      font-weight: 600;
+      color: var(--mc-primary-800);
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &__read-btn {
+    border: none;
+    background: transparent;
+    color: var(--mc-text-secondary);
+    font-family: inherit;
+    font-size: var(--mc-font-size-xs);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}

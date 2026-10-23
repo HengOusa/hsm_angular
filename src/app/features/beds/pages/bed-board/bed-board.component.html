@@ -1,0 +1,129 @@
+<div class="mc-beds" data-test="beds-page">
+  <mc-page-header
+    title="Ward & Beds"
+    subtitle="Live bed map · color-coded status"
+    icon="hotel"
+  />
+
+  <section class="mc-beds__stats" aria-label="Hospital bed totals">
+    <mc-stat-card
+      label="Total beds"
+      [value]="facade.totals().total"
+      icon="hotel"
+      color="neutral"
+    />
+    <mc-stat-card
+      label="Available"
+      [value]="facade.totals().available"
+      icon="check_circle"
+      color="accent"
+    />
+    <mc-stat-card
+      label="Occupied"
+      [value]="facade.totals().occupied"
+      icon="person"
+      color="alert"
+    />
+  </section>
+
+  <!-- Ward overview cards – full width fluid -->
+  <section class="mc-beds__wards" aria-label="Wards">
+    <button
+      type="button"
+      class="mc-ward-card"
+      [class.mc-ward-card--active]="facade.wardFilter() === 'ALL'"
+      (click)="facade.setWard('ALL')"
+      data-test="ward-all"
+    >
+      <span class="mc-ward-card__name">All wards</span>
+      <span class="mc-ward-card__meta">Hospital-wide</span>
+    </button>
+    @for (w of facade.wards(); track w.id) {
+      <button
+        type="button"
+        class="mc-ward-card"
+        [class.mc-ward-card--active]="facade.wardFilter() === w.id"
+        (click)="facade.setWard(w.id)"
+        [attr.data-test]="'ward-' + w.id"
+      >
+        <span class="mc-ward-card__name">{{ w.name }}</span>
+        <span class="mc-ward-card__meta">Floor {{ w.floor }} · {{ w.total }} beds</span>
+        <div class="mc-ward-card__bars">
+          <span class="mc-ward-card__bar mc-ward-card__bar--available" [style.flex]="w.available" [matTooltip]="w.available + ' available'"></span>
+          <span class="mc-ward-card__bar mc-ward-card__bar--occupied" [style.flex]="w.occupied" [matTooltip]="w.occupied + ' occupied'"></span>
+          <span class="mc-ward-card__bar mc-ward-card__bar--other" [style.flex]="w.cleaning + w.reserved + w.maintenance || 0.01"></span>
+        </div>
+      </button>
+    }
+  </section>
+
+  <div class="mc-beds__filters">
+    <mat-button-toggle-group
+      [value]="facade.statusFilter()"
+      (change)="facade.setStatus($event.value)"
+      data-test="bed-status-filter"
+    >
+      @for (s of statuses; track s.value) {
+        <mat-button-toggle [value]="s.value">{{ s.label }}</mat-button-toggle>
+      }
+    </mat-button-toggle-group>
+  </div>
+
+  <!-- Legend -->
+  <div class="mc-beds__legend" aria-hidden="true">
+    <span><i class="mc-dot mc-dot--available"></i> Available</span>
+    <span><i class="mc-dot mc-dot--occupied"></i> Occupied</span>
+    <span><i class="mc-dot mc-dot--cleaning"></i> Cleaning</span>
+    <span><i class="mc-dot mc-dot--reserved"></i> Reserved</span>
+    <span><i class="mc-dot mc-dot--maintenance"></i> Maintenance</span>
+  </div>
+
+  @if (facade.loading()) {
+    <div class="mc-beds__grid">
+      @for (i of [1,2,3,4,5,6,7,8]; track i) {
+        <mc-loading-skeleton variant="card" />
+      }
+    </div>
+  } @else if (facade.beds().length === 0) {
+    <mc-empty-state title="No beds match filters" message="Try another ward or status." icon="hotel" />
+  } @else {
+    <div class="mc-beds__grid" data-test="bed-grid">
+      @for (b of facade.beds(); track b.id) {
+        <article
+          class="mc-bed-tile"
+          [attr.data-status]="b.status"
+          [attr.data-test]="'bed-' + b.id"
+        >
+          <div class="mc-bed-tile__header">
+            <span class="mc-bed-tile__number">{{ b.bedNumber }}</span>
+            <mc-status-badge [variant]="statusVariant(b.status)" [label]="b.status" [showDot]="true" />
+          </div>
+          <div class="mc-bed-tile__body">
+            <div class="mc-bed-tile__room">{{ b.wardName }} · Rm {{ b.room }} · {{ b.type }}</div>
+            @if (b.currentPatientName) {
+              <div class="mc-bed-tile__patient">
+                <mat-icon>person</mat-icon>
+                {{ b.currentPatientName }}
+              </div>
+            } @else {
+              <div class="mc-bed-tile__patient mc-bed-tile__patient--empty">No patient</div>
+            }
+            <div class="mc-bed-tile__features">{{ featureIcons(b) }}</div>
+          </div>
+          <div class="mc-bed-tile__actions">
+            <button mat-stroked-button type="button" [matMenuTriggerFor]="menu" data-test="bed-actions">
+              Change status
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="setStatus(b, 'Available')">Available</button>
+              <button mat-menu-item (click)="setStatus(b, 'Occupied')">Occupied</button>
+              <button mat-menu-item (click)="setStatus(b, 'Cleaning')">Cleaning</button>
+              <button mat-menu-item (click)="setStatus(b, 'Reserved')">Reserved</button>
+              <button mat-menu-item (click)="setStatus(b, 'Maintenance')">Maintenance</button>
+            </mat-menu>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>

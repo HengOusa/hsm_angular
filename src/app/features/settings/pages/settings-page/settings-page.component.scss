@@ -1,0 +1,63 @@
+.mc-settings {
+  width: 100%;
+  max-width: 100%;
+
+  &__layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: var(--mc-space-4);
+    width: 100%;
+  }
+
+  &__form {
+    padding: var(--mc-space-6);
+    width: 100%;
+  }
+
+  &__toggles {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mc-space-3);
+    margin-bottom: var(--mc-space-5);
+  }
+
+  &__theme {
+    margin-bottom: var(--mc-space-5);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mc-space-2);
+    align-items: center;
+  }
+
+  &__side {
+    padding: var(--mc-space-5);
+    height: fit-content;
+  }
+
+  &__links {
+    margin: var(--mc-space-3) 0 0;
+    padding-left: 1.1rem;
+
+    a {
+      color: var(--mc-primary-800);
+      font-weight: 600;
+      text-decoration: none;
+      font-size: var(--mc-font-size-sm);
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .mc-h4 {
+    margin: var(--mc-space-4) 0 var(--mc-space-3);
+  }
+}
+
+:host ::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}

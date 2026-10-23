@@ -1,0 +1,91 @@
+@if (facade.loading() && !facade.selected()) {
+  <mc-loading-skeleton variant="card" />
+} @else {
+  @if (facade.selected(); as p) {
+    <div class="mc-detail" data-test="patient-detail">
+      <mc-page-header [title]="fullName()" [subtitle]="p.mrn" icon="personal_injury">
+        <div actions class="mc-detail__actions">
+          <mc-status-badge [variant]="statusVariant(p.status)" [label]="p.status" />
+          <a mat-button routerLink="/patients">
+            <mat-icon>arrow_back</mat-icon>
+            List
+          </a>
+        </div>
+      </mc-page-header>
+
+      <div class="mc-detail__grid">
+        <section class="mc-card mc-detail__card">
+          <h3 class="mc-h4">Demographics</h3>
+          <dl class="mc-detail__dl">
+            <div><dt>Age</dt><dd>{{ p.dateOfBirth | mcAge:'full' }}</dd></div>
+            <div><dt>DOB</dt><dd>{{ p.dateOfBirth }}</dd></div>
+            <div><dt>Gender</dt><dd>{{ p.gender }}</dd></div>
+            <div><dt>Blood group</dt><dd>{{ p.bloodGroup | mcBloodGroup }}</dd></div>
+            <div><dt>Phone</dt><dd>{{ p.phone }}</dd></div>
+            <div><dt>Email</dt><dd>{{ p.email || '—' }}</dd></div>
+            <div class="mc-detail__full"><dt>Address</dt><dd>{{ p.address || '—' }}</dd></div>
+          </dl>
+        </section>
+
+        <section class="mc-card mc-detail__card">
+          <h3 class="mc-h4">Clinical</h3>
+          <dl class="mc-detail__dl">
+            <div class="mc-detail__full">
+              <dt>Allergies</dt>
+              <dd>
+                @if (p.allergies.length) {
+                  <span class="mc-detail__allergy">{{ p.allergies.join(', ') }}</span>
+                } @else {
+                  None recorded
+                }
+              </dd>
+            </div>
+            <div class="mc-detail__full">
+              <dt>Chronic conditions</dt>
+              <dd>{{ p.chronicConditions.length ? p.chronicConditions.join(', ') : 'None recorded' }}</dd>
+            </div>
+            <div><dt>Bed</dt><dd>{{ p.bedId || '—' }}</dd></div>
+            <div><dt>Ward</dt><dd>{{ p.wardId || '—' }}</dd></div>
+          </dl>
+        </section>
+
+        <section class="mc-card mc-detail__card">
+          <h3 class="mc-h4">Emergency & insurance</h3>
+          <dl class="mc-detail__dl">
+            <div class="mc-detail__full">
+              <dt>Emergency contact</dt>
+              <dd>
+                @if (p.emergencyContact; as ec) {
+                  {{ ec.name }} ({{ ec.relation }}) · {{ ec.phone }}
+                } @else {
+                  —
+                }
+              </dd>
+            </div>
+            <div class="mc-detail__full">
+              <dt>Insurance</dt>
+              <dd>
+                @if (p.insurance; as ins) {
+                  {{ ins.provider }} · {{ ins.policyNumber }} · valid {{ ins.validity }}
+                } @else {
+                  —
+                }
+              </dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="mc-card mc-detail__card">
+          <h3 class="mc-h4">Journey</h3>
+          <mc-timeline [items]="timeline()" />
+          <p class="mc-caption mc-detail__updated">Updated {{ p.updatedAt | mcTimeAgo }}</p>
+        </section>
+      </div>
+    </div>
+  } @else {
+    <div class="mc-card mc-detail__not-found">
+      <p>Patient not found.</p>
+      <a mat-flat-button color="primary" routerLink="/patients">Back to list</a>
+    </div>
+  }
+}

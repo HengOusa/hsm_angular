@@ -1,0 +1,65 @@
+<div class="mc-notif" data-test="notifications-page">
+  <mc-page-header
+    title="Notifications"
+    subtitle="Clinical alerts · ops · billing · roster"
+    icon="notifications"
+  >
+  </mc-page-header>
+
+  <div class="mc-notif__toolbar">
+    <mat-button-toggle-group [value]="filter()" (change)="filter.set($event.value)">
+      <mat-button-toggle value="all">All</mat-button-toggle>
+      <mat-button-toggle value="unread">Unread ({{ facade.unreadCount() }})</mat-button-toggle>
+    </mat-button-toggle-group>
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="facade.markAllRead()"
+      [disabled]="facade.unreadCount() === 0"
+      data-test="mark-all-read"
+    >
+      Mark all read
+    </button>
+  </div>
+
+  @if (facade.loading() && facade.items().length === 0) {
+    <mc-loading-skeleton variant="table-row" [count]="5" />
+  } @else if (visible().length === 0) {
+    <mc-empty-state title="No notifications" message="You're all caught up." icon="notifications_none" />
+  } @else {
+    <ul class="mc-notif__list">
+      @for (n of visible(); track n.id) {
+        <li
+          class="mc-notif__item"
+          [class.mc-notif__item--unread]="!n.read"
+          [attr.data-type]="n.type"
+          [attr.data-test]="'notif-' + n.id"
+        >
+          <div class="mc-notif__icon" [attr.data-type]="n.type">
+            <mat-icon>{{ icon(n.type) }}</mat-icon>
+          </div>
+          <div class="mc-notif__content">
+            <div class="mc-notif__title-row">
+              <strong>{{ n.title }}</strong>
+              <span class="mc-caption">{{ n.createdAt | mcTimeAgo }}</span>
+            </div>
+            <p>{{ n.message }}</p>
+            <div class="mc-notif__meta">
+              @if (n.source) {
+                <span class="mc-caption">{{ n.source }}</span>
+              }
+              @if (n.route) {
+                <a [routerLink]="n.route" (click)="markRead(n)">Open</a>
+              }
+              @if (!n.read) {
+                <button type="button" class="mc-notif__read-btn" (click)="markRead(n)">
+                  Mark read
+                </button>
+              }
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</div>

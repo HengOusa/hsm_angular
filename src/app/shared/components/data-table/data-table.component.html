@@ -1,0 +1,71 @@
+<div class="mc-data-table" [attr.data-test]="testId()">
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="mc-data-table__progress"></mat-progress-bar>
+    <div class="mc-data-table__skeletons">
+      @for (i of [1, 2, 3, 4, 5]; track i) {
+        <mc-loading-skeleton variant="table-row" [count]="columns().length" />
+      }
+    </div>
+  } @else if (data().length === 0) {
+    <mc-empty-state
+      [title]="emptyTitle()"
+      [message]="emptyMessage()"
+      icon="search_off"
+    />
+  } @else {
+    <div class="mc-data-table__scroll">
+      <table
+        mat-table
+        [dataSource]="data()"
+        matSort
+        (matSortChange)="sortChange.emit($event)"
+        class="mc-data-table__table"
+      >
+        @for (col of columns(); track col.key) {
+          <ng-container [matColumnDef]="col.key">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              [mat-sort-header]="col.sortable !== false ? col.key : ''"
+              [disabled]="col.sortable === false"
+              [style.width]="col.width"
+              [style.text-align]="col.align ?? 'left'"
+            >
+              {{ col.header }}
+            </th>
+            <td
+              mat-cell
+              *matCellDef="let row"
+              [style.text-align]="col.align ?? 'left'"
+            >
+              {{ cellValue(row, col) }}
+            </td>
+          </ng-container>
+        }
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns; trackBy: trackRow"
+          class="mc-data-table__row"
+          (click)="rowClick.emit(row)"
+          (keydown.enter)="rowClick.emit(row)"
+          tabindex="0"
+          role="button"
+        ></tr>
+      </table>
+    </div>
+
+    @if (total() > pageSize()) {
+      <mat-paginator
+        [length]="total()"
+        [pageSize]="pageSize()"
+        [pageIndex]="pageIndex()"
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        (page)="pageChange.emit($event)"
+        showFirstLastButtons
+        data-test="data-table-paginator"
+      ></mat-paginator>
+    }
+  }
+</div>

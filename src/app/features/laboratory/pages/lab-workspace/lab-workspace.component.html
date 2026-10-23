@@ -1,0 +1,161 @@
+<div class="mc-lab" data-test="lab-page">
+  <mc-page-header
+    title="Laboratory"
+    subtitle="Orders · sample workflow · results & critical alerts"
+    icon="science"
+  />
+
+  <section class="mc-lab__stats">
+    <mc-stat-card label="Open tests" [value]="facade.pendingCount()" icon="pending_actions" color="primary" />
+    <mc-stat-card label="Critical results" [value]="facade.criticalCount()" icon="warning" color="alert" />
+    <mc-stat-card label="Catalog" [value]="facade.catalog().length" icon="menu_book" color="neutral" />
+  </section>
+
+  <mat-tab-group animationDuration="150ms">
+    <mat-tab label="Worklist">
+      <div class="mc-lab__panel">
+        <div class="mc-lab__toolbar">
+          <mc-search-bar placeholder="Patient, test, order ID…" (search)="onSearch($event)" />
+          <mat-button-toggle-group [value]="statusFilter()" (change)="setStatusFilter($event.value)">
+            <mat-button-toggle value="ALL">All</mat-button-toggle>
+            <mat-button-toggle value="Ordered">Ordered</mat-button-toggle>
+            <mat-button-toggle value="SampleCollected">Sample</mat-button-toggle>
+            <mat-button-toggle value="Processing">Processing</mat-button-toggle>
+            <mat-button-toggle value="Reported">Reported</mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+
+        @if (facade.loading() && facade.tests().length === 0) {
+          <mc-loading-skeleton variant="card" [count]="3" />
+        } @else if (facade.tests().length === 0) {
+          <mc-empty-state title="No lab tests" message="Create an order or change filters." icon="science" />
+        } @else {
+          <div class="mc-lab__list">
+            @for (t of facade.tests(); track t.id) {
+              <article class="mc-lab-card mc-card" [class.mc-lab-card--critical]="t.isCritical" [attr.data-test]="'lab-' + t.id">
+                <header class="mc-lab-card__head">
+                  <div>
+                    <h3 class="mc-h4">{{ t.testName }} <span class="mc-mono mc-caption">({{ t.testCode }})</span></h3>
+                    <p class="mc-caption">
+                      {{ t.patientName }} · {{ t.orderId }} · {{ t.orderedByName }} · {{ t.updatedAt | mcTimeAgo }}
+                    </p>
+                  </div>
+                  <div class="mc-lab-card__badges">
+                    <mc-status-badge [variant]="statusVariant(t.status)" [label]="t.status" />
+                    @if (t.isCritical) {
+                      <mc-status-badge variant="critical" label="Critical" />
+                    } @else if (t.isAbnormal) {
+                      <mc-status-badge variant="abnormal" label="Abnormal" />
+                    }
+                  </div>
+                </header>
+
+                <div class="mc-lab-card__meta">
+                  <span>{{ t.category }}</span>
+                  <span>{{ t.sampleType }}</span>
+                  @if (t.referenceRange) {
+                    <span>Ref {{ t.referenceRange }} {{ t.unit }}</span>
+                  }
+                </div>
+
+                @if (t.result) {
+                  <p class="mc-lab-card__result">
+                    Result: <strong>{{ t.result }}</strong> {{ t.unit }}
+                    @if (t.reportedBy) {
+                      <span class="mc-caption"> · {{ t.reportedBy }}</span>
+                    }
+                  </p>
+                }
+
+                @if (t.isCritical) {
+                  <mc-alert-banner
+                    variant="critical"
+                    title="Critical value"
+                    [message]="'Notify ordering clinician: ' + t.orderedByName"
+                    [dismissible]="false"
+                    class="mc-lab-card__alert"
+                  />
+                }
+
+                <div class="mc-lab-card__actions">
+                  @if (t.status === 'Ordered' || t.status === 'SampleCollected' || t.status === 'Processing') {
+                    <button mat-stroked-button type="button" (click)="advance(t)" [disabled]="facade.saving()">
+                      Advance status
+                    </button>
+                  }
+                  @if (t.status !== 'Reported') {
+                    <div class="mc-lab-card__result-entry">
+                      <input
+                        class="mc-lab-card__input"
+                        type="text"
+                        [value]="resultDraft()[t.id] || ''"
+                        (input)="setDraft(t.id, $any($event.target).value)"
+                        [placeholder]="t.unit ? 'Value (' + t.unit + ')' : 'Result'"
+                        data-test="lab-result-input"
+                      />
+                      <button
+                        mat-flat-button
+                        color="primary"
+                        type="button"
+                        (click)="report(t)"
+                        [disabled]="facade.saving() || !resultDraft()[t.id]"
+                        data-test="lab-report"
+                      >
+                        Report
+                      </button>
+                    </div>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <mat-tab label="New order">
+      <div class="mc-lab__panel">
+        <form class="mc-lab__order mc-card" [formGroup]="orderForm" (ngSubmit)="submitOrder()">
+          <h3 class="mc-h4">Order laboratory tests</h3>
+          <div class="mc-form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Patient</mat-label>
+              <mat-select formControlName="patientId" data-test="lab-order-patient">
+                @for (p of patients; track p.id) {
+                  <mat-option [value]="p.id">{{ p.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <p class="mc-label">Select tests</p>
+          <div class="mc-lab__catalog">
+            @for (c of facade.catalog(); track c.code) {
+              <label class="mc-lab__cat-item">
+                <input
+                  type="checkbox"
+                  [checked]="isCodeSelected(c.code)"
+                  (change)="toggleCode(c.code, $any($event.target).checked)"
+                />
+                <span>
+                  <strong>{{ c.name }}</strong>
+                  <span class="mc-caption"> · {{ c.code }} · {{ c.category }} · {{ c.sampleType }}</span>
+                </span>
+              </label>
+            }
+          </div>
+
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="facade.saving() || !orderForm.controls.testCodes.value.length"
+            data-test="lab-order-submit"
+          >
+            @if (facade.saving()) { Ordering… } @else { Place order }
+          </button>
+        </form>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

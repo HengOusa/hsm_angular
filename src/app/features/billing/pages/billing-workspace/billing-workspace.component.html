@@ -1,0 +1,200 @@
+<div class="mc-bill" data-test="billing-page">
+  <mc-page-header
+    title="Billing & Finance"
+    subtitle="Invoices · payments · department revenue"
+    icon="receipt_long"
+  />
+
+  <section class="mc-bill__stats">
+    <mc-stat-card
+      label="Issued"
+      [value]="'$' + (facade.revenue()?.totalIssued ?? 0 | number:'1.0-0')"
+      icon="receipt"
+      color="primary"
+    />
+    <mc-stat-card
+      label="Collected"
+      [value]="'$' + (facade.revenue()?.totalCollected ?? 0 | number:'1.0-0')"
+      icon="payments"
+      color="accent"
+    />
+    <mc-stat-card
+      label="Outstanding"
+      [value]="'$' + (facade.revenue()?.outstanding ?? 0 | number:'1.0-0')"
+      icon="account_balance_wallet"
+      color="warning"
+    />
+    <mc-stat-card
+      label="Overdue"
+      [value]="facade.revenue()?.overdueCount ?? 0"
+      icon="warning"
+      color="alert"
+    />
+  </section>
+
+  @if (facade.revenue()?.byDepartment?.length) {
+    <div class="mc-bill__dept">
+      @for (d of facade.revenue()!.byDepartment; track d.department) {
+        <div class="mc-bill__dept-item">
+          <span>{{ d.department }}</span>
+          <strong>${{ d.amount | number:'1.2-2' }}</strong>
+        </div>
+      }
+    </div>
+  }
+
+  <mat-tab-group animationDuration="150ms">
+    <mat-tab label="Invoices">
+      <div class="mc-bill__panel">
+        <div class="mc-bill__toolbar">
+          <mc-search-bar placeholder="Patient, invoice #, department…" (search)="onSearch($event)" />
+          <mat-button-toggle-group [value]="statusFilter()" (change)="setStatus($event.value)">
+            <mat-button-toggle value="ALL">All</mat-button-toggle>
+            <mat-button-toggle value="Issued">Issued</mat-button-toggle>
+            <mat-button-toggle value="PartiallyPaid">Partial</mat-button-toggle>
+            <mat-button-toggle value="Paid">Paid</mat-button-toggle>
+            <mat-button-toggle value="Overdue">Overdue</mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+
+        @if (facade.loading() && facade.invoices().length === 0) {
+          <mc-loading-skeleton variant="card" [count]="3" />
+        } @else if (facade.invoices().length === 0) {
+          <mc-empty-state title="No invoices" message="Create one in the New invoice tab." icon="receipt_long" />
+        } @else {
+          <div class="mc-bill__list">
+            @for (inv of facade.invoices(); track inv.id) {
+              <article class="mc-inv-card mc-card" [attr.data-test]="'inv-' + inv.id">
+                <header class="mc-inv-card__head">
+                  <div>
+                    <h3 class="mc-h4">{{ inv.patientName }}</h3>
+                    <p class="mc-caption">
+                      <span class="mc-mono">{{ inv.invoiceNumber }}</span>
+                      · {{ inv.department }} · Due {{ inv.dueDate }}
+                    </p>
+                  </div>
+                  <mc-status-badge [variant]="statusVariant(inv.status)" [label]="inv.status" />
+                </header>
+
+                <ul class="mc-inv-card__lines">
+                  @for (l of inv.lines; track l.id) {
+                    <li>
+                      {{ l.description }}
+                      <span class="mc-caption"> ×{{ l.quantity }} at ${{ l.unitPrice | number:'1.2-2' }}</span>
+                      <strong>${{ l.amount | number:'1.2-2' }}</strong>
+                    </li>
+                  }
+                </ul>
+
+                <div class="mc-inv-card__totals">
+                  <span>Subtotal ${{ inv.subtotal | number:'1.2-2' }}</span>
+                  <span>Tax ${{ inv.tax | number:'1.2-2' }}</span>
+                  @if (inv.discount) {
+                    <span>Discount −${{ inv.discount | number:'1.2-2' }}</span>
+                  }
+                  <span class="mc-inv-card__total">Total ${{ inv.total | number:'1.2-2' }}</span>
+                  <span>Paid ${{ inv.amountPaid | number:'1.2-2' }}</span>
+                  <span class="mc-inv-card__balance">Balance ${{ inv.balance | number:'1.2-2' }}</span>
+                </div>
+
+                @if (inv.balance > 0 && inv.status !== 'Void') {
+                  <div class="mc-inv-card__pay">
+                    <input
+                      type="number"
+                      class="mc-inv-card__input"
+                      [placeholder]="inv.balance.toFixed(2)"
+                      [attr.data-test]="'pay-amount-' + inv.id"
+                      (input)="setPayAmount(inv.id, $any($event.target).value)"
+                    />
+                    <button mat-flat-button color="primary" type="button" (click)="pay(inv, 'Cash')" [disabled]="facade.saving()">
+                      Pay cash
+                    </button>
+                    <button mat-stroked-button type="button" (click)="pay(inv, 'Card')" [disabled]="facade.saving()">
+                      Card
+                    </button>
+                    <button mat-button type="button" (click)="pay(inv, 'Insurance')" [disabled]="facade.saving()">
+                      Insurance
+                    </button>
+                  </div>
+                }
+              </article>
+            }
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <mat-tab label="New invoice">
+      <div class="mc-bill__panel">
+        <form class="mc-bill__form mc-card" [formGroup]="invoiceForm" (ngSubmit)="submitInvoice()">
+          <h3 class="mc-h4">Create invoice</h3>
+          <div class="mc-form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Patient</mat-label>
+              <mat-select formControlName="patientId">
+                @for (p of patients; track p.id) {
+                  <mat-option [value]="p.id">{{ p.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Department</mat-label>
+              <input matInput formControlName="department" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Due in (days)</mat-label>
+              <input matInput type="number" formControlName="dueDays" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Discount $</mat-label>
+              <input matInput type="number" formControlName="discount" />
+            </mat-form-field>
+          </div>
+
+          <h4 class="mc-h4">Line items</h4>
+          <div formArrayName="lines" class="mc-bill__lines">
+            @for (ctrl of lines.controls; track $index; let i = $index) {
+              <div class="mc-bill__line" [formGroupName]="i">
+                <mat-form-field appearance="outline">
+                  <mat-label>Description</mat-label>
+                  <input matInput formControlName="description" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Category</mat-label>
+                  <mat-select formControlName="category">
+                    @for (c of categories; track c) {
+                      <mat-option [value]="c">{{ c }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Qty</mat-label>
+                  <input matInput type="number" formControlName="quantity" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Unit price</mat-label>
+                  <input matInput type="number" formControlName="unitPrice" />
+                </mat-form-field>
+                <button mat-icon-button type="button" (click)="removeLine(i)" aria-label="Remove line">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+          <button mat-button type="button" (click)="addLine()">
+            <mat-icon>add</mat-icon> Add line
+          </button>
+
+          <mat-form-field appearance="outline" class="mc-bill__notes">
+            <mat-label>Notes</mat-label>
+            <input matInput formControlName="notes" />
+          </mat-form-field>
+
+          <button mat-flat-button color="primary" type="submit" [disabled]="invoiceForm.invalid || facade.saving()" data-test="inv-create">
+            @if (facade.saving()) { Creating… } @else { Issue invoice }
+          </button>
+        </form>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

@@ -1,0 +1,87 @@
+<div class="mc-apts" data-test="appointments-page">
+  <mc-page-header
+    title="Appointments"
+    subtitle="Day board · conflict-aware booking"
+    icon="calendar_month"
+  >
+    <a actions mat-flat-button color="primary" routerLink="/appointments/book" data-test="btn-book-apt">
+      <mat-icon>add</mat-icon>
+      Book appointment
+    </a>
+  </mc-page-header>
+
+  <div class="mc-apts__toolbar">
+    <button mat-icon-button type="button" (click)="shiftDay(-1)" aria-label="Previous day">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <input
+      class="mc-apts__date"
+      type="date"
+      [value]="facade.dateFilter()"
+      (change)="onDateChange($event)"
+      data-test="apt-date-filter"
+    />
+    <button mat-icon-button type="button" (click)="shiftDay(1)" aria-label="Next day">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+    <button mat-stroked-button type="button" (click)="facade.setDate(facade.dateFilter())">
+      Refresh
+    </button>
+  </div>
+
+  @if (facade.loading()) {
+    <div class="mc-apts__list">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <mc-loading-skeleton variant="card" />
+      }
+    </div>
+  } @else if (facade.appointments().length === 0) {
+    <mc-empty-state
+      title="No appointments this day"
+      message="Book a slot or pick another date."
+      icon="event_busy"
+    >
+      <a actions mat-flat-button color="primary" routerLink="/appointments/book">Book appointment</a>
+    </mc-empty-state>
+  } @else {
+    <div class="mc-apts__list" data-test="apt-list">
+      @for (a of facade.appointments(); track a.id) {
+        <article class="mc-apt-card" [attr.data-test]="'apt-' + a.id">
+          <div class="mc-apt-card__time">
+            <span class="mc-apt-card__start">{{ a.startTime }}</span>
+            <span class="mc-apt-card__end">{{ a.endTime }}</span>
+          </div>
+          <div class="mc-apt-card__body">
+            <div class="mc-apt-card__title">{{ a.patientName }}</div>
+            <div class="mc-apt-card__meta">
+              <span class="mc-mono">{{ a.appointmentNumber }}</span>
+              · {{ a.doctorName }} · {{ a.departmentName }}
+            </div>
+            @if (a.chiefComplaint) {
+              <div class="mc-apt-card__complaint">{{ a.chiefComplaint }}</div>
+            }
+          </div>
+          <div class="mc-apt-card__side">
+            <mc-status-badge [variant]="statusVariant(a.status)" [label]="a.status" />
+            <span class="mc-apt-card__type" [attr.data-type]="a.type">{{ a.type }}</span>
+            <button
+              mat-icon-button
+              type="button"
+              [matMenuTriggerFor]="statusMenu"
+              aria-label="Change status"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #statusMenu="matMenu">
+              <button mat-menu-item (click)="setStatus(a.id, 'Confirmed')">Confirm</button>
+              <button mat-menu-item (click)="setStatus(a.id, 'InProgress')">Start</button>
+              <button mat-menu-item (click)="setStatus(a.id, 'Completed')">Complete</button>
+              <button mat-menu-item (click)="setStatus(a.id, 'NoShow')">No-show</button>
+              <button mat-menu-item (click)="setStatus(a.id, 'Cancelled')">Cancel</button>
+            </mat-menu>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,151 @@
+<div class="mc-staff" data-test="staff-page">
+  <mc-page-header
+    title="Staff & Roster"
+    subtitle="Shifts · coverage · conflict detection"
+    icon="groups"
+  />
+
+  @if (facade.conflictCount() > 0) {
+    <mc-alert-banner
+      variant="warning"
+      title="Schedule conflicts"
+      [message]="facade.conflictCount() + ' shift(s) overlap for the same staff member. Review highlighted cards.'"
+      [dismissible]="false"
+      class="mc-staff__banner"
+    />
+  }
+
+  <section class="mc-staff__stats">
+    <mc-stat-card label="Staff" [value]="facade.staff().length" icon="badge" color="primary" />
+    <mc-stat-card label="Today shifts" [value]="facade.todayCount()" icon="event" color="accent" />
+    <mc-stat-card label="Conflicts" [value]="facade.conflictCount()" icon="warning" color="warning" />
+  </section>
+
+  <mat-tab-group animationDuration="150ms">
+    <mat-tab label="Roster">
+      <div class="mc-staff__panel">
+        <div class="mc-staff__toolbar">
+          <mat-button-toggle-group value="ALL" (change)="filterDept($event.value)">
+            @for (d of departments; track d) {
+              <mat-button-toggle [value]="d">{{ d }}</mat-button-toggle>
+            }
+          </mat-button-toggle-group>
+        </div>
+
+        @if (facade.loading() && facade.shifts().length === 0) {
+          <mc-loading-skeleton variant="card" [count]="3" />
+        } @else if (facade.shifts().length === 0) {
+          <mc-empty-state title="No shifts" message="Schedule a shift in the next tab." icon="groups" />
+        } @else {
+          @for (date of dates(); track date) {
+            <section class="mc-staff__day">
+              <h3 class="mc-h4 mc-staff__day-title">{{ date }}</h3>
+              <div class="mc-staff__grid">
+                @for (s of shiftsOn(date); track s.id) {
+                  <article
+                    class="mc-shift-card"
+                    [class.mc-shift-card--conflict]="s.conflictIds.length > 0"
+                    [class.mc-shift-card--cancelled]="s.status === 'Cancelled'"
+                    [attr.data-test]="'shift-' + s.id"
+                  >
+                    <header class="mc-shift-card__head">
+                      <div>
+                        <strong>{{ s.staffName }}</strong>
+                        <p class="mc-caption">{{ s.role }} · {{ s.department }}</p>
+                      </div>
+                      <mc-status-badge [variant]="statusVariant(s.status)" [label]="s.status" />
+                    </header>
+                    <div class="mc-shift-card__body">
+                      <span class="mc-shift-card__type">{{ s.shiftType }}</span>
+                      <span class="mc-mono">{{ s.startTime }}–{{ s.endTime }}</span>
+                      @if (s.location) {
+                        <span>{{ s.location }}</span>
+                      }
+                    </div>
+                    @if (s.conflictIds.length) {
+                      <p class="mc-shift-card__conflict">Overlapping shift conflict</p>
+                    }
+                    @if (s.status === 'Scheduled' || s.status === 'Confirmed') {
+                      <div class="mc-shift-card__actions">
+                        @if (s.status === 'Scheduled') {
+                          <button mat-stroked-button type="button" (click)="confirm(s)">Confirm</button>
+                        }
+                        <button mat-button type="button" (click)="cancel(s)">Cancel</button>
+                      </div>
+                    }
+                  </article>
+                }
+              </div>
+            </section>
+          }
+        }
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Schedule shift">
+      <div class="mc-staff__panel">
+        <form class="mc-staff__form mc-card" [formGroup]="form" (ngSubmit)="submit()">
+          <h3 class="mc-h4">Add shift</h3>
+          <div class="mc-form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Staff member</mat-label>
+              <mat-select formControlName="staffId" data-test="shift-staff">
+                @for (m of facade.staff(); track m.id) {
+                  <mat-option [value]="m.id">
+                    {{ m.firstName }} {{ m.lastName }} ({{ m.role }} · {{ m.department }})
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Date</mat-label>
+              <input matInput type="date" formControlName="date" data-test="shift-date" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Shift type</mat-label>
+              <mat-select formControlName="shiftType">
+                @for (t of shiftTypes; track t) {
+                  <mat-option [value]="t">{{ t }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Location</mat-label>
+              <input matInput formControlName="location" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="mc-form-grid__full">
+              <mat-label>Notes</mat-label>
+              <input matInput formControlName="notes" />
+            </mat-form-field>
+          </div>
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="form.invalid || facade.saving()"
+            data-test="shift-submit"
+          >
+            @if (facade.saving()) { Saving… } @else { Schedule shift }
+          </button>
+        </form>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Directory">
+      <div class="mc-staff__panel">
+        <div class="mc-staff__dir">
+          @for (m of facade.staff(); track m.id) {
+            <div class="mc-staff-tile">
+              <div class="mc-staff-tile__avatar">{{ m.firstName.charAt(0) }}{{ m.lastName.charAt(0) }}</div>
+              <div>
+                <strong>{{ m.firstName }} {{ m.lastName }}</strong>
+                <p class="mc-caption">{{ m.role }} · {{ m.department }} · {{ m.employeeId }}</p>
+                <p class="mc-caption">{{ m.email }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

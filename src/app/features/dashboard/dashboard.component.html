@@ -1,0 +1,127 @@
+<div class="mc-dashboard" data-test="dashboard-page">
+  <mc-page-header
+    title="Command Center"
+    subtitle="Live KPIs from hospital modules"
+    icon="dashboard"
+  />
+
+  @if (unread() > 0) {
+    <mc-alert-banner
+      variant="warning"
+      title="Unread alerts"
+      [message]="unread() + ' notification(s) need review — open the notification center.'"
+      [dismissible]="true"
+      class="mc-dashboard__alert"
+    />
+  }
+
+  <section class="mc-dashboard__stats" aria-label="Key statistics">
+    <mc-stat-card
+      label="Patients"
+      [value]="patientTotal()"
+      icon="personal_injury"
+      color="primary"
+      testId="stat-patients"
+    />
+    <mc-stat-card
+      label="Beds available"
+      [value]="bedLabel()"
+      icon="hotel"
+      color="accent"
+      testId="stat-beds"
+    />
+    <mc-stat-card
+      label="Open lab tests"
+      [value]="pendingLab()"
+      icon="science"
+      color="warning"
+      testId="stat-lab"
+    />
+    <mc-stat-card
+      label="ER active"
+      [value]="erActive()"
+      icon="emergency"
+      color="alert"
+      testId="stat-er"
+    />
+    <mc-stat-card
+      label="Pending Rx"
+      [value]="pendingRx()"
+      icon="medication"
+      color="warning"
+      testId="stat-rx"
+    />
+    <mc-stat-card
+      label="Outstanding $"
+      [value]="outstandingLabel()"
+      icon="payments"
+      color="primary"
+      testId="stat-billing"
+    />
+    <mc-stat-card
+      label="Today shifts"
+      [value]="todayShifts()"
+      icon="groups"
+      color="accent"
+      testId="stat-staff"
+    />
+    <mc-stat-card
+      label="Shift conflicts"
+      [value]="conflicts()"
+      icon="warning"
+      color="alert"
+      testId="stat-conflicts"
+    />
+  </section>
+
+  <section class="mc-dashboard__panels">
+    <div class="mc-card mc-dashboard__panel">
+      <div class="mc-dashboard__panel-head">
+        <h3 class="mc-h4">Recent activity</h3>
+        <a routerLink="/audit" class="mc-dashboard__link">Audit log</a>
+      </div>
+      <mc-timeline [items]="recentActivity()" />
+    </div>
+
+    <div class="mc-card mc-dashboard__panel">
+      <div class="mc-dashboard__panel-head">
+        <h3 class="mc-h4">Ward occupancy</h3>
+        <a routerLink="/beds" class="mc-dashboard__link">Bed map</a>
+      </div>
+      @if (wards().length === 0) {
+        <p class="mc-caption">Loading wards…</p>
+      } @else {
+        <ul class="mc-dashboard__wards">
+          @for (w of wards(); track w.id) {
+            <li>
+              <div class="mc-dashboard__ward-row">
+                <span>{{ w.name }}</span>
+                <span class="mc-mono">{{ w.available }}/{{ w.total }} free</span>
+              </div>
+              <div class="mc-dashboard__bar" role="presentation">
+                <span
+                  class="mc-dashboard__bar-fill"
+                  [style.width.%]="w.total ? (w.occupied / w.total) * 100 : 0"
+                ></span>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    <div class="mc-card mc-dashboard__panel">
+      <div class="mc-dashboard__panel-head">
+        <h3 class="mc-h4">Quick links</h3>
+      </div>
+      <div class="mc-dashboard__quick">
+        <a routerLink="/emergency">Emergency board</a>
+        <a routerLink="/laboratory">Lab worklist</a>
+        <a routerLink="/pharmacy">Pharmacy</a>
+        <a routerLink="/appointments">Appointments</a>
+        <a routerLink="/notifications">Notifications</a>
+        <a routerLink="/reports">Full report</a>
+      </div>
+    </div>
+  </section>
+</div>

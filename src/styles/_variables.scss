@@ -1,0 +1,142 @@
+// MediCore HMS Design Tokens
+// Medical-grade professional aesthetic
+
+:root {
+  // Primary – Deep Medical Blue
+  --mc-primary-50: #e3f2fd;
+  --mc-primary-100: #bbdefb;
+  --mc-primary-200: #90caf9;
+  --mc-primary-300: #64b5f6;
+  --mc-primary-400: #42a5f5;
+  --mc-primary-500: #2196f3;
+  --mc-primary-600: #1e88e5;
+  --mc-primary-700: #1976d2;
+  --mc-primary-800: #1565c0; // Main primary
+  --mc-primary-900: #0d47a1;
+
+  // Accent – Medical Green
+  --mc-accent-50: #e8f5e9;
+  --mc-accent-100: #c8e6c9;
+  --mc-accent-200: #a5d6a7;
+  --mc-accent-300: #81c784;
+  --mc-accent-400: #66bb6a;
+  --mc-accent-500: #4caf50;
+  --mc-accent-600: #43a047;
+  --mc-accent-700: #388e3c;
+  --mc-accent-800: #2e7d32; // Main accent
+  --mc-accent-900: #1b5e20;
+
+  // Alert – Emergency Red
+  --mc-alert-50: #ffebee;
+  --mc-alert-100: #ffcdd2;
+  --mc-alert-500: #f44336;
+  --mc-alert-700: #d32f2f;
+  --mc-alert-800: #c62828; // Main alert
+
+  // Warning – Amber
+  --mc-warning-50: #fff8e1;
+  --mc-warning-500: #ffc107;
+  --mc-warning-700: #f57f17;
+
+  // Surfaces
+  --mc-surface: #ffffff;
+  --mc-background: #f5f7fa;
+  --mc-surface-variant: #eef1f6;
+  --mc-border: #e0e6ed;
+  --mc-divider: #e8edf2;
+
+  // Text
+  --mc-text-primary: #1a2332;
+  --mc-text-secondary: #5a6a7e;
+  --mc-text-disabled: #9aa8b8;
+  --mc-text-on-primary: #ffffff;
+  --mc-text-on-alert: #ffffff;
+
+  // Status colors (beds, triage, etc.)
+  --mc-status-available: #2e7d32;
+  --mc-status-occupied: #c62828;
+  --mc-status-cleaning: #f57f17;
+  --mc-status-reserved: #1565c0;
+  --mc-status-maintenance: #757575;
+
+  // Triage
+  --mc-triage-immediate: #c62828;
+  --mc-triage-urgent: #ef6c00;
+  --mc-triage-less-urgent: #f9a825;
+  --mc-triage-non-urgent: #2e7d32;
+  --mc-triage-deceased: #212121;
+
+  // Layout
+  --mc-sidebar-width: 16.25rem;
+  --mc-sidebar-collapsed-width: 4.5rem;
+  --mc-topbar-height: 4rem;
+  --mc-emergency-banner-height: 48px;
+
+  // Typography
+  --mc-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --mc-font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --mc-font-size-xs: 0.75rem;
+  --mc-font-size-sm: 0.875rem;
+  --mc-font-size-base: 0.9375rem; // 15px – readable for medical
+  --mc-font-size-md: 1rem;
+  --mc-font-size-lg: 1.125rem;
+  --mc-font-size-xl: 1.25rem;
+  --mc-font-size-2xl: 1.5rem;
+  --mc-font-size-3xl: 1.875rem;
+
+  // Spacing
+  --mc-space-1: 0.25rem;
+  --mc-space-2: 0.5rem;
+  --mc-space-3: 0.75rem;
+  --mc-space-4: 1rem;
+  --mc-space-5: 1.25rem;
+  --mc-space-6: 1.5rem;
+  --mc-space-8: 2rem;
+  --mc-space-10: 2.5rem;
+  --mc-space-12: 3rem;
+
+  // Radius
+  --mc-radius-sm: 4px;
+  --mc-radius-md: 8px;
+  --mc-radius-lg: 12px;
+  --mc-radius-xl: 16px;
+  --mc-radius-full: 9999px;
+
+  // Shadows
+  --mc-shadow-sm: 0 1px 2px rgba(26, 35, 50, 0.05);
+  --mc-shadow-md: 0 4px 12px rgba(26, 35, 50, 0.08);
+  --mc-shadow-lg: 0 8px 24px rgba(26, 35, 50, 0.12);
+  --mc-shadow-xl: 0 16px 40px rgba(26, 35, 50, 0.16);
+
+  // Transitions
+  --mc-transition-fast: 150ms ease;
+  --mc-transition-base: 250ms ease;
+  --mc-transition-slow: 350ms ease;
+
+  // Z-index
+  --mc-z-sidebar: 100;
+  --mc-z-topbar: 110;
+  --mc-z-emergency: 200;
+  --mc-z-modal: 300;
+  --mc-z-toast: 400;
+
+  /* Content area – full width of main pane; override max if needed */
+  --mc-content-max: 100%;
+  --mc-content-padding-x: clamp(1rem, 2.5vw, 2rem);
+  --mc-content-padding-y: 1.5rem;
+}
+
+// Dark mode
+.dark-theme {
+  --mc-surface: #1a2332;
+  --mc-background: #0f1520;
+  --mc-surface-variant: #243044;
+  --mc-border: #2d3a4f;
+  --mc-divider: #243044;
+  --mc-text-primary: #e8edf2;
+  --mc-text-secondary: #9aa8b8;
+  --mc-text-disabled: #5a6a7e;
+  --mc-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --mc-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --mc-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+}

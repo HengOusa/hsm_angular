@@ -1,0 +1,29 @@
+<ol class="mc-timeline" [attr.data-test]="testId()" role="list">
+  @for (item of items(); track item.id; let last = $last) {
+    <li class="mc-timeline__item" [class.mc-timeline__item--last]="last" role="listitem">
+      <div
+        class="mc-timeline__marker"
+        [attr.data-color]="item.color ?? 'primary'"
+        aria-hidden="true"
+      >
+        <mat-icon>{{ item.icon ?? 'circle' }}</mat-icon>
+      </div>
+      <div class="mc-timeline__content">
+        <div class="mc-timeline__header">
+          <span class="mc-timeline__title">{{ item.title }}</span>
+          <time class="mc-timeline__time" [attr.datetime]="item.timestamp">
+            {{ formatTime(item.timestamp) }}
+          </time>
+        </div>
+        @if (item.subtitle) {
+          <p class="mc-timeline__subtitle">{{ item.subtitle }}</p>
+        }
+        @if (item.meta) {
+          <span class="mc-timeline__meta">{{ item.meta }}</span>
+        }
+      </div>
+    </li>
+  } @empty {
+    <li class="mc-timeline__empty">No events yet</li>
+  }
+</ol>

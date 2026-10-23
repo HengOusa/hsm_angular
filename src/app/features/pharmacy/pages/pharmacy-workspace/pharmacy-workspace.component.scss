@@ -1,0 +1,140 @@
+.mc-pharm {
+  width: 100%;
+  max-width: 100%;
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
+    gap: var(--mc-space-3);
+    margin-bottom: var(--mc-space-4);
+    width: 100%;
+  }
+
+  &__panel {
+    padding: var(--mc-space-4) 0;
+    width: 100%;
+  }
+
+  &__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--mc-space-3);
+    margin-bottom: var(--mc-space-4);
+    width: 100%;
+  }
+
+  &__rx-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mc-space-3);
+    width: 100%;
+  }
+
+  &__drug-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+    gap: var(--mc-space-3);
+    width: 100%;
+  }
+}
+
+.mc-rx-card {
+  width: 100%;
+
+  &__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--mc-space-3);
+    margin-bottom: var(--mc-space-3);
+  }
+
+  &__alert {
+    display: block;
+    margin-bottom: var(--mc-space-3);
+  }
+
+  &__meds {
+    margin: 0 0 var(--mc-space-3);
+    padding-left: 1.15rem;
+    font-size: var(--mc-font-size-sm);
+    color: var(--mc-text-primary);
+
+    li {
+      margin-bottom: 0.35rem;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mc-space-2);
+  }
+}
+
+.mc-drug-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: var(--mc-space-3);
+  background: var(--mc-surface);
+  border: 1px solid var(--mc-border);
+  border-radius: var(--mc-radius-lg);
+  border-left: 4px solid var(--mc-primary-400);
+
+  &--low {
+    border-left-color: var(--mc-warning-700);
+    background: #fffbf0;
+  }
+
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--mc-space-2);
+  }
+
+  &__name {
+    font-weight: 700;
+    font-size: var(--mc-font-size-sm);
+  }
+
+  &__meta {
+    font-size: var(--mc-font-size-xs);
+    color: var(--mc-text-secondary);
+  }
+
+  &__stock {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+
+    strong {
+      font-size: var(--mc-font-size-lg);
+    }
+  }
+
+  &__qty--low {
+    color: var(--mc-warning-700);
+  }
+
+  &__foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mc-space-2);
+    margin-top: 0.35rem;
+    font-size: var(--mc-font-size-xs);
+    color: var(--mc-text-disabled);
+  }
+
+  &__exp--soon {
+    color: var(--mc-alert-800);
+    font-weight: 600;
+  }
+}
+
+:host ::ng-deep .mat-mdc-tab-body-wrapper {
+  width: 100%;
+}

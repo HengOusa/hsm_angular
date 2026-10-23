@@ -1,0 +1,48 @@
+.mc-audit {
+  width: 100%;
+  max-width: 100%;
+
+  &__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mc-space-3);
+    margin-bottom: var(--mc-space-4);
+    width: 100%;
+  }
+
+  &__table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--mc-border);
+    border-radius: var(--mc-radius-lg);
+    background: var(--mc-surface);
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--mc-font-size-sm);
+
+    th,
+    td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--mc-border);
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--mc-surface-variant);
+      font-weight: 600;
+      font-size: var(--mc-font-size-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--mc-text-secondary);
+      white-space: nowrap;
+    }
+
+    tbody tr:hover {
+      background: var(--mc-background);
+    }
+  }
+}

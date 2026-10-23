@@ -1,0 +1,36 @@
+<div class="mc-reports" data-test="reports-page">
+  <mc-page-header
+    title="Operations report"
+    subtitle="Cross-module snapshot for charge nurses and admins"
+    icon="analytics"
+  />
+
+  <section class="mc-reports__grid">
+    <mc-stat-card label="Patients" [value]="patients.total()" icon="personal_injury" color="primary" />
+    <mc-stat-card label="Open beds avail." [value]="beds.totals().available" icon="hotel" color="accent" />
+    <mc-stat-card label="ER active" [value]="emergency.activeCount()" icon="emergency" color="alert" />
+    <mc-stat-card label="Pending Rx" [value]="pharmacy.pendingRxCount()" icon="medication" color="warning" />
+    <mc-stat-card label="Open lab tests" [value]="lab.pendingCount()" icon="science" color="primary" />
+    <mc-stat-card label="Unread alerts" [value]="notifications.unreadCount()" icon="notifications" color="alert" />
+    <mc-stat-card label="Shift conflicts" [value]="staff.conflictCount()" icon="groups" color="warning" />
+    <mc-stat-card
+      label="Outstanding $"
+      [value]="billing.revenue()?.outstanding ?? 0"
+      icon="receipt_long"
+      color="neutral"
+    />
+  </section>
+
+  <section class="mc-reports__links mc-card">
+    <h3 class="mc-h4">Jump to module</h3>
+    <div class="mc-reports__link-row">
+      <a routerLink="/emergency">Emergency board</a>
+      <a routerLink="/laboratory">Lab worklist</a>
+      <a routerLink="/pharmacy">Pharmacy queue</a>
+      <a routerLink="/beds">Bed map</a>
+      <a routerLink="/staff">Roster</a>
+      <a routerLink="/billing">Billing</a>
+      <a routerLink="/notifications">Notifications</a>
+    </div>
+  </section>
+</div>

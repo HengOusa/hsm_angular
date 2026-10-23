@@ -1,0 +1,44 @@
+.mc-confirm {
+  min-width: 320px;
+  max-width: 440px;
+  padding: var(--mc-space-2);
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--mc-radius-full);
+    background: var(--mc-primary-50);
+    color: var(--mc-primary-800);
+    margin-bottom: var(--mc-space-3);
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  &[data-variant='danger'] &__icon {
+    background: var(--mc-alert-50);
+    color: var(--mc-alert-800);
+  }
+
+  &__title {
+    margin: 0 0 var(--mc-space-2);
+  }
+
+  &__message {
+    margin: 0;
+    color: var(--mc-text-secondary);
+    font-size: var(--mc-font-size-base);
+    line-height: 1.5;
+  }
+
+  &__actions {
+    padding-top: var(--mc-space-4) !important;
+    gap: var(--mc-space-2);
+  }
+}

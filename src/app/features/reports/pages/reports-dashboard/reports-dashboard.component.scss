@@ -1,0 +1,40 @@
+.mc-reports {
+  width: 100%;
+  max-width: 100%;
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr));
+    gap: var(--mc-space-3);
+    margin-bottom: var(--mc-space-5);
+    width: 100%;
+  }
+
+  &__links {
+    padding: var(--mc-space-5);
+    width: 100%;
+  }
+
+  &__link-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mc-space-3);
+    margin-top: var(--mc-space-3);
+
+    a {
+      padding: 0.4rem 0.85rem;
+      border-radius: var(--mc-radius-full);
+      border: 1px solid var(--mc-border);
+      background: var(--mc-background);
+      color: var(--mc-primary-800);
+      font-size: var(--mc-font-size-sm);
+      font-weight: 600;
+      text-decoration: none;
+
+      &:hover {
+        border-color: var(--mc-primary-300);
+        background: var(--mc-primary-50);
+      }
+    }
+  }
+}

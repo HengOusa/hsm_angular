@@ -1,0 +1,130 @@
+<header class="mc-topbar" role="banner">
+  <div class="mc-topbar__left">
+    <button
+      mat-icon-button
+      type="button"
+      class="mc-topbar__sidebar-toggle"
+      (click)="toggleSidebar.emit()"
+      [matTooltip]="sidebarCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+      [attr.aria-label]="sidebarCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+      data-test="sidebar-toggle"
+    >
+      <mat-icon>{{ sidebarCollapsed() ? 'menu' : 'menu_open' }}</mat-icon>
+    </button>
+
+    <div class="mc-topbar__search" (click)="onSearch()" role="search" data-test="global-search">
+      <mat-icon class="mc-topbar__search-icon">search</mat-icon>
+      <span class="mc-topbar__search-placeholder">Search patients, appointments…</span>
+      <kbd class="mc-topbar__kbd">Ctrl+F</kbd>
+    </div>
+  </div>
+
+  <div class="mc-topbar__right">
+    @if (isLoading()) {
+      <div class="mc-topbar__loading" aria-live="polite" aria-label="Loading">
+        <mat-icon class="mc-spin">sync</mat-icon>
+      </div>
+    }
+
+    <button
+      mat-icon-button
+      type="button"
+      matTooltip="Toggle theme"
+      aria-label="Toggle dark mode"
+      (click)="toggleTheme()"
+      data-test="theme-toggle"
+    >
+      <mat-icon>{{ darkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
+
+    <button
+      mat-icon-button
+      type="button"
+      matTooltip="Notifications"
+      aria-label="Notifications"
+      routerLink="/notifications"
+      data-test="notifications-btn"
+    >
+      <mat-icon
+        [matBadge]="unreadCount() || null"
+        matBadgeColor="warn"
+        matBadgeSize="small"
+        [matBadgeHidden]="!unreadCount()"
+      >notifications</mat-icon>
+    </button>
+
+    <button
+      mat-icon-button
+      type="button"
+      matTooltip="Quick actions"
+      aria-label="Quick actions"
+      [matMenuTriggerFor]="quickMenu"
+      data-test="quick-actions-btn"
+    >
+      <mat-icon>add_circle_outline</mat-icon>
+    </button>
+    <mat-menu #quickMenu="matMenu">
+      <button mat-menu-item data-test="qa-new-patient" routerLink="/patients/register">
+        <mat-icon>person_add</mat-icon>
+        <span>Admit Patient</span>
+      </button>
+      <button mat-menu-item data-test="qa-new-appointment" routerLink="/appointments/book">
+        <mat-icon>event</mat-icon>
+        <span>Book Appointment</span>
+      </button>
+      <button mat-menu-item data-test="qa-new-lab">
+        <mat-icon>science</mat-icon>
+        <span>Order Lab Test</span>
+      </button>
+    </mat-menu>
+
+    <!-- Improved profile chip -->
+    <button
+      type="button"
+      class="mc-topbar__profile"
+      [matMenuTriggerFor]="userMenu"
+      data-test="user-menu-btn"
+      [attr.aria-label]="'Account menu for ' + (fullName() || 'User')"
+    >
+      <div class="mc-topbar__avatar" aria-hidden="true">
+        {{ initials() }}
+      </div>
+      <div class="mc-topbar__profile-text mc-hide-mobile">
+        <span class="mc-topbar__profile-name">{{ fullName() || 'User' }}</span>
+        <span class="mc-topbar__profile-role">{{ roleLabel() }}</span>
+      </div>
+      <mat-icon class="mc-topbar__profile-caret mc-hide-mobile">expand_more</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu" class="mc-profile-menu" xPosition="before">
+      <div class="mc-profile-menu__header" role="presentation">
+        <div class="mc-topbar__avatar mc-topbar__avatar--lg" aria-hidden="true">
+          {{ initials() }}
+        </div>
+        <div class="mc-profile-menu__meta">
+          <strong class="mc-profile-menu__name">{{ fullName() }}</strong>
+          <span class="mc-profile-menu__email">{{ user()?.email || '—' }}</span>
+          <span class="mc-profile-menu__badge">{{ roleLabel() }}</span>
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item type="button">
+        <mat-icon>badge</mat-icon>
+        <span>My profile</span>
+      </button>
+      <button mat-menu-item type="button" routerLink="/settings">
+        <mat-icon>settings</mat-icon>
+        <span>Preferences</span>
+      </button>
+      <button mat-menu-item type="button" (click)="toggleTheme()">
+        <mat-icon>{{ darkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        <span>{{ darkMode() ? 'Light mode' : 'Dark mode' }}</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item type="button" class="mc-profile-menu__logout" (click)="onLogout()" data-test="logout-btn">
+        <mat-icon>logout</mat-icon>
+        <span>Sign out</span>
+      </button>
+    </mat-menu>
+  </div>
+</header>

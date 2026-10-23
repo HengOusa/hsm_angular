@@ -1,0 +1,206 @@
+<div class="mc-emr" data-test="emr-page">
+  <mc-page-header
+    title="Electronic Medical Records"
+    subtitle="SOAP notes · vitals · ICD-10 diagnoses"
+    icon="medical_information"
+  />
+
+  <mat-tab-group animationDuration="150ms" class="mc-emr__tabs">
+    <!-- Notes list -->
+    <mat-tab label="Notes">
+      <div class="mc-emr__panel">
+        @if (facade.loading() && facade.notes().length === 0) {
+          <mc-loading-skeleton variant="card" [count]="3" />
+        } @else if (facade.notes().length === 0) {
+          <mc-empty-state title="No SOAP notes yet" message="Create one in the SOAP tab." icon="description" />
+        } @else {
+          <div class="mc-emr__notes">
+            @for (n of facade.notes(); track n.id) {
+              <article class="mc-soap-card mc-card">
+                <header class="mc-soap-card__head">
+                  <div>
+                    <h3 class="mc-h4">{{ n.patientName }}</h3>
+                    <p class="mc-caption">{{ n.visitDate }} · {{ n.authorName }} · {{ n.createdAt | mcTimeAgo }}</p>
+                  </div>
+                  <div class="mc-soap-card__codes">
+                    @for (d of n.diagnoses; track d.code) {
+                      <span class="mc-medical-code">{{ d.code | mcMedicalCode }}</span>
+                    }
+                  </div>
+                </header>
+                <div class="mc-soap-card__grid">
+                  <div><strong>S</strong><p>{{ n.subjective }}</p></div>
+                  <div><strong>O</strong><p>{{ n.objective || '—' }}</p></div>
+                  <div><strong>A</strong><p>{{ n.assessment }}</p></div>
+                  <div><strong>P</strong><p>{{ n.plan }}</p></div>
+                </div>
+              </article>
+            }
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- SOAP editor -->
+    <mat-tab label="New SOAP">
+      <div class="mc-emr__panel">
+        <form class="mc-emr__form" [formGroup]="soapForm" (ngSubmit)="saveSoap()">
+          <div class="mc-form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Patient</mat-label>
+              <mat-select formControlName="patientId" data-test="soap-patient">
+                @for (p of patients; track p.id) {
+                  <mat-option [value]="p.id">{{ p.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Visit date</mat-label>
+              <input matInput type="date" formControlName="visitDate" />
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="mc-emr__full">
+            <mat-label>Subjective</mat-label>
+            <textarea matInput rows="3" formControlName="subjective" data-test="soap-s"></textarea>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="mc-emr__full">
+            <mat-label>Objective</mat-label>
+            <textarea matInput rows="3" formControlName="objective" data-test="soap-o"></textarea>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="mc-emr__full">
+            <mat-label>Assessment</mat-label>
+            <textarea matInput rows="2" formControlName="assessment" data-test="soap-a"></textarea>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="mc-emr__full">
+            <mat-label>Plan</mat-label>
+            <textarea matInput rows="2" formControlName="plan" data-test="soap-p"></textarea>
+          </mat-form-field>
+
+          <h4 class="mc-h4">Diagnoses (ICD-10)</h4>
+          <mat-form-field appearance="outline" class="mc-emr__full">
+            <mat-label>Search code or description</mat-label>
+            <input matInput [value]="icdQuery()" (input)="onIcdSearch($event)" data-test="icd-search" />
+            <mat-icon matPrefix>search</mat-icon>
+          </mat-form-field>
+
+          <div class="mc-emr__icd-results">
+            @for (c of facade.icdResults(); track c.code) {
+              <button type="button" class="mc-emr__icd-item" (click)="addDiagnosis(c)">
+                <span class="mc-medical-code">{{ c.code }}</span>
+                <span>{{ c.description }}</span>
+              </button>
+            }
+          </div>
+
+          <div class="mc-emr__chips">
+            @for (d of selectedDiagnoses(); track d.code) {
+              <span class="mc-emr__chip">
+                {{ d.code }} — {{ d.description }}
+                <button type="button" (click)="removeDiagnosis(d.code)" aria-label="Remove">×</button>
+              </span>
+            }
+          </div>
+
+          <div class="mc-emr__actions">
+            <button mat-flat-button color="primary" type="submit" [disabled]="facade.saving() || soapForm.invalid" data-test="soap-save">
+              @if (facade.saving()) { Saving… } @else { Save SOAP note }
+            </button>
+          </div>
+        </form>
+      </div>
+    </mat-tab>
+
+    <!-- Vitals -->
+    <mat-tab label="Vitals">
+      <div class="mc-emr__panel">
+        <div class="mc-emr__vitals-layout">
+          <form class="mc-emr__form mc-card" [formGroup]="vitalsForm" (ngSubmit)="saveVitals()">
+            <h4 class="mc-h4">Record vitals</h4>
+            <div class="mc-form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Patient</mat-label>
+                <mat-select formControlName="patientId">
+                  @for (p of patients; track p.id) {
+                    <mat-option [value]="p.id">{{ p.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>BP systolic</mat-label>
+                <input matInput type="number" formControlName="bloodPressureSystolic" data-test="vit-sys" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>BP diastolic</mat-label>
+                <input matInput type="number" formControlName="bloodPressureDiastolic" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Heart rate</mat-label>
+                <input matInput type="number" formControlName="heartRate" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Temp °C</mat-label>
+                <input matInput type="number" step="0.1" formControlName="temperature" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>SpO₂ %</mat-label>
+                <input matInput type="number" formControlName="spo2" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>RR</mat-label>
+                <input matInput type="number" formControlName="respiratoryRate" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Glucose</mat-label>
+                <input matInput type="number" formControlName="bloodGlucose" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Weight kg</mat-label>
+                <input matInput type="number" formControlName="weight" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Height cm</mat-label>
+                <input matInput type="number" formControlName="height" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Pain 0–10</mat-label>
+                <input matInput type="number" formControlName="pain" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="mc-form-grid__full">
+                <mat-label>Notes</mat-label>
+                <input matInput formControlName="notes" />
+              </mat-form-field>
+            </div>
+            <button mat-flat-button color="primary" type="submit" [disabled]="facade.saving()" data-test="vitals-save">
+              Save vitals
+            </button>
+          </form>
+
+          <div class="mc-emr__vitals-side">
+            <mc-vital-chart label="Heart rate" unit="bpm" [points]="hrPoints()" [min]="40" [max]="140" />
+            <div class="mc-emr__vitals-list">
+              @for (v of facade.vitals(); track v.id) {
+                <div class="mc-vit-row">
+                  <div>
+                    <strong>{{ patientName(v.patientId) }}</strong>
+                    <span class="mc-caption"> · {{ v.recordedAt | mcTimeAgo }} · {{ v.recordedBy }}</span>
+                  </div>
+                  <div class="mc-vit-row__vals">
+                    @if (v.bloodPressureSystolic) {
+                      <span>{{ v.bloodPressureSystolic }}/{{ v.bloodPressureDiastolic }}</span>
+                    }
+                    @if (v.heartRate) { <span>HR {{ v.heartRate }}</span> }
+                    @if (v.spo2) { <span>SpO₂ {{ v.spo2 }}%</span> }
+                    @if (v.isAbnormal) {
+                      <mc-status-badge variant="abnormal" label="Abnormal" />
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
